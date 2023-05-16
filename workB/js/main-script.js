@@ -2,7 +2,6 @@
 /* GLOBAL VARIABLES */
 //////////////////////
 var camera, scene, renderer;
-var geometry, material, mesh;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -14,7 +13,6 @@ function createScene() {
 
 
     scene.add(new THREE.AxisHelper(10));
-
 }
 
 //////////////////////
