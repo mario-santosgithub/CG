@@ -16,7 +16,9 @@ function createScene() {
     scene.add(new THREE.AxisHelper(20));
     scene.background = new THREE.Color( 0xE7DAF9 );
 
-    createRobot();
+    createChest();
+    createLeftArm();
+    createRigthArm()
 
 }
 
@@ -31,9 +33,9 @@ function createCamera1() {
                                          window.innerWidth / window.innerHeight,
                                          1,
                                          1000);
-    camera1.position.x = 50;
+    camera1.position.x = 0;
     camera1.position.y = 0;
-    camera1.position.z = 5;
+    camera1.position.z = 50;
     camera1.lookAt(scene.position);
 }
 
@@ -44,9 +46,9 @@ function createCamera2() {
                                          window.innerWidth / window.innerHeight,
                                          1,
                                          1000);
-    camera2.position.x = 0;
-    camera2.position.y = 50;
-    camera2.position.z = 5;
+    camera2.position.x = 50;
+    camera2.position.y = 0;
+    camera2.position.z = 0;
     camera2.lookAt(scene.position);
 }
 
@@ -58,8 +60,8 @@ function createCamera3() {
                                          1,
                                          1000);
     camera3.position.x = 0;
-    camera3.position.y = 0;
-    camera3.position.z = 50;
+    camera3.position.y = 50;
+    camera3.position.z = 0;
     camera3.lookAt(scene.position);
 }
 
@@ -98,19 +100,101 @@ function createCamera5() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
-function createRobot() {
+function createChest() {
     'use strict'
 
-    var cube = new THREE.Object3D();
-    material = new THREE.MeshBasicMaterial ({color: 0xff3210, wireframe: false });
-    geometry = new THREE.BoxGeometry(10, 10, 10)
+    var cube1 = new THREE.Object3D(); // abdomen of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0x00ff210, wireframe: false });
+    geometry = new THREE.BoxGeometry(4, 2, 8)
     mesh = new THREE.Mesh(geometry, material);
 
-    cube.add(mesh);
-    cube.position.set(0, 0, 0);
+    cube1.add(mesh);
+    cube1.position.set(0, 1, 0);
 
-    scene.add(cube);
+    scene.add(cube1);
+
+    var cube2 = new THREE.Object3D(); // bottom of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0xfb3210, wireframe: false });
+    geometry = new THREE.BoxGeometry(8, 2, 8)
+    mesh = new THREE.Mesh(geometry, material);
+
+    cube2.add(mesh);
+    cube2.position.set(0, -1, 0);
+
+    scene.add(cube2);
+
+    var cube3 = new THREE.Object3D(); // front of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0x0000ff, wireframe: false });
+    geometry = new THREE.BoxGeometry(4, 6, 8)
+    mesh = new THREE.Mesh(geometry, material);
+
+    cube3.add(mesh);
+    cube3.position.set(0, 5, 0);
+
+    scene.add(cube3);
+
+    var cube4 = new THREE.Object3D(); // left of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0x00ffff, wireframe: false });
+    geometry = new THREE.BoxGeometry(2, 6, 6)
+    mesh = new THREE.Mesh(geometry, material);
+
+    cube4.add(mesh);
+    cube4.position.set(3, 5, 1);
+
+    scene.add(cube4);
+
+    var cube5 = new THREE.Object3D(); // right of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0x00ffff, wireframe: false });
+    geometry = new THREE.BoxGeometry(2, 6, 6)
+    mesh = new THREE.Mesh(geometry, material);
+
+    cube5.add(mesh);
+    cube5.position.set(-3, 5, 1);
+
+    scene.add(cube5);
 }
+
+function createLeftArm() {
+    'use strict';
+    
+    var cube1 = new THREE.Object3D(); // right of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
+    geometry = new THREE.BoxGeometry(2, 2, 6)
+    mesh = new THREE.Mesh(geometry, material);
+
+    cube1.add(mesh);
+    
+    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
+    geometry = new THREE.BoxGeometry(2, 8, 2)
+    mesh = new THREE.Mesh(geometry, material);
+    
+    mesh.position.set(0,3, -4)
+    cube1.add(mesh);
+    cube1.position.set(3, 1, 1);
+
+    scene.add(cube1);
+}
+
+function createRigthArm() {
+    
+    var cube1 = new THREE.Object3D(); // right of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
+    geometry = new THREE.BoxGeometry(2, 2, 6)
+    mesh = new THREE.Mesh(geometry, material);
+
+    cube1.add(mesh);
+    
+    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
+    geometry = new THREE.BoxGeometry(2, 8, 2)
+    mesh = new THREE.Mesh(geometry, material);
+    
+    mesh.position.set(0,3, -4)
+    cube1.add(mesh);
+    cube1.position.set(-3, 1, 1);
+
+    scene.add(cube1);
+}
+
 
 //////////////////////
 /* CHECK COLLISIONS */
