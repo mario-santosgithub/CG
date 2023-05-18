@@ -18,7 +18,7 @@ function createScene() {
 
     createChest();
     createLeftArm();
-    createRigthArm()
+    createRigthArm();
 
 }
 
@@ -108,50 +108,42 @@ function createChest() {
     geometry = new THREE.BoxGeometry(4, 2, 8)
     mesh = new THREE.Mesh(geometry, material);
 
+    mesh.position.set(0, 1, 0);
     cube1.add(mesh);
-    cube1.position.set(0, 1, 0);
 
-    scene.add(cube1);
 
-    var cube2 = new THREE.Object3D(); // bottom of the chest
     material = new THREE.MeshBasicMaterial ({color: 0xfb3210, wireframe: false });
     geometry = new THREE.BoxGeometry(8, 2, 8)
     mesh = new THREE.Mesh(geometry, material);
 
-    cube2.add(mesh);
-    cube2.position.set(0, -1, 0);
+    mesh.position.set(0, -1, 0);
+    cube1.add(mesh);
 
-    scene.add(cube2);
 
-    var cube3 = new THREE.Object3D(); // front of the chest
     material = new THREE.MeshBasicMaterial ({color: 0x0000ff, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 6, 8)
     mesh = new THREE.Mesh(geometry, material);
 
-    cube3.add(mesh);
-    cube3.position.set(0, 5, 0);
+    mesh.position.set(0, 5, 0);
+    cube1.add(mesh);
 
-    scene.add(cube3);
 
-    var cube4 = new THREE.Object3D(); // left of the chest
     material = new THREE.MeshBasicMaterial ({color: 0x00ffff, wireframe: false });
     geometry = new THREE.BoxGeometry(2, 6, 6)
     mesh = new THREE.Mesh(geometry, material);
 
-    cube4.add(mesh);
-    cube4.position.set(3, 5, 1);
+    mesh.position.set(3, 5, 1);
+    cube1.add(mesh);
 
-    scene.add(cube4);
 
-    var cube5 = new THREE.Object3D(); // right of the chest
     material = new THREE.MeshBasicMaterial ({color: 0x00ffff, wireframe: false });
     geometry = new THREE.BoxGeometry(2, 6, 6)
     mesh = new THREE.Mesh(geometry, material);
 
-    cube5.add(mesh);
-    cube5.position.set(-3, 5, 1);
+    mesh.position.set(-3, 5, 1);
+    cube1.add(mesh);
 
-    scene.add(cube5);
+    scene.add(cube1);
 }
 
 function createLeftArm() {
