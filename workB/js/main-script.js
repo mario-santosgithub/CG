@@ -89,7 +89,7 @@ function createCamera5() {
     camera5.position.y = 0;
     camera5.position.z = 100;
     camera5.lookAt(scene.position);
-    camera5.rotateZ(Math.PI)
+    camera5.rotateZ(Math.PI);
 }
 
 /////////////////////
@@ -105,42 +105,60 @@ function createChest() {
 
     var cube1 = new THREE.Object3D(); // abdomen of the chest
     material = new THREE.MeshBasicMaterial ({color: 0x00ff210, wireframe: false });
-    geometry = new THREE.BoxGeometry(4, 2, 8)
+    geometry = new THREE.BoxGeometry(8, 4, 16);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(0, 1, 0);
+    mesh.position.set(0, 2, 0);
     cube1.add(mesh);
 
 
     material = new THREE.MeshBasicMaterial ({color: 0xfb3210, wireframe: false });
-    geometry = new THREE.BoxGeometry(8, 2, 8)
+    geometry = new THREE.BoxGeometry(16, 4, 16);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(0, -1, 0);
+    mesh.position.set(0, -2, 0);
     cube1.add(mesh);
 
 
     material = new THREE.MeshBasicMaterial ({color: 0x0000ff, wireframe: false });
-    geometry = new THREE.BoxGeometry(4, 6, 8)
+    geometry = new THREE.BoxGeometry(8, 12, 16);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(0, 5, 0);
+    mesh.position.set(0, 10, 0);
     cube1.add(mesh);
 
 
     material = new THREE.MeshBasicMaterial ({color: 0x00ffff, wireframe: false });
-    geometry = new THREE.BoxGeometry(2, 6, 6)
+    geometry = new THREE.BoxGeometry(4, 12, 12);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(3, 5, 1);
+    mesh.position.set(6, 10, 2);
     cube1.add(mesh);
 
 
     material = new THREE.MeshBasicMaterial ({color: 0x00ffff, wireframe: false });
-    geometry = new THREE.BoxGeometry(2, 6, 6)
+    geometry = new THREE.BoxGeometry(4, 12, 12);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(-3, 5, 1);
+    mesh.position.set(-6, 10, 2);
+    cube1.add(mesh);
+
+    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
+    geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+
+    mesh.position.set(10, -4, 2);
+    cube1.add(mesh);
+
+    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
+    geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+
+    mesh.position.set(-10, -4, 2);
     cube1.add(mesh);
 
     scene.add(cube1);
@@ -151,18 +169,18 @@ function createLeftArm() {
     
     var cube1 = new THREE.Object3D(); // right of the chest
     material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
-    geometry = new THREE.BoxGeometry(2, 2, 6)
+    geometry = new THREE.BoxGeometry(4, 4, 12);
     mesh = new THREE.Mesh(geometry, material);
 
     cube1.add(mesh);
     
     material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
-    geometry = new THREE.BoxGeometry(2, 8, 2)
+    geometry = new THREE.BoxGeometry(4, 16, 4);
     mesh = new THREE.Mesh(geometry, material);
     
-    mesh.position.set(0,3, -4)
+    mesh.position.set(0, 6, -8);
     cube1.add(mesh);
-    cube1.position.set(3, 1, 1);
+    cube1.position.set(6, 2, 2);
 
     scene.add(cube1);
 }
@@ -171,22 +189,21 @@ function createRigthArm() {
     
     var cube1 = new THREE.Object3D(); // right of the chest
     material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
-    geometry = new THREE.BoxGeometry(2, 2, 6)
+    geometry = new THREE.BoxGeometry(4, 4, 12);
     mesh = new THREE.Mesh(geometry, material);
 
     cube1.add(mesh);
     
     material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
-    geometry = new THREE.BoxGeometry(2, 8, 2)
+    geometry = new THREE.BoxGeometry(4, 16, 4);
     mesh = new THREE.Mesh(geometry, material);
     
-    mesh.position.set(0,3, -4)
+    mesh.position.set(0, 6, -8);
     cube1.add(mesh);
-    cube1.position.set(-3, 1, 1);
+    cube1.position.set(-6, 2, 2);
 
     scene.add(cube1);
 }
-
 
 //////////////////////
 /* CHECK COLLISIONS */
