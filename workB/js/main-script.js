@@ -19,6 +19,8 @@ function createScene() {
     createChest();
     createLeftArm();
     createRigthArm();
+    createLeftLeg();
+    createRightLeg();
     createHead();
 
 }
@@ -248,6 +250,84 @@ function createHead(){
     cube1.position.set(0, 20, 0);
 
     scene.add(cube1);
+}
+
+function createLeftLeg() {
+
+    var cube1 = new THREE.Object3D(); // right of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
+    geometry = new THREE.BoxGeometry(5, 4, 8)
+    mesh = new THREE.Mesh(geometry, material);
+
+    cube1.add(mesh);
+    
+    material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
+    geometry = new THREE.BoxGeometry(4, 16, 4)
+    mesh = new THREE.Mesh(geometry, material);
+    
+    mesh.position.set(0,10, -1)
+    cube1.add(mesh);
+
+    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
+    geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+
+    mesh.position.set(4, 1, 0);
+    cube1.add(mesh);
+
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+
+    mesh.position.set(4, 8.5, 0);
+
+    cube1.add(mesh);
+
+    cube1.position.set(4, -22, 0);
+
+    scene.add(cube1);
+    
+}
+
+function createRightLeg() {
+
+    var cube1 = new THREE.Object3D(); // right of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
+    geometry = new THREE.BoxGeometry(5, 4, 8)
+    mesh = new THREE.Mesh(geometry, material);
+
+    cube1.add(mesh);
+    
+    material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
+    geometry = new THREE.BoxGeometry(4, 16, 4)
+    mesh = new THREE.Mesh(geometry, material);
+    
+    mesh.position.set(0, 10, -1)
+    cube1.add(mesh);
+
+    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
+    geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+
+    mesh.position.set(-4, 1, 0);
+    cube1.add(mesh);
+
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+
+    mesh.position.set(-4, 8.5, 0);
+
+    cube1.add(mesh);
+
+    cube1.position.set(-4, -22, 0);
+
+    scene.add(cube1);
+    
 }
 
 //////////////////////
