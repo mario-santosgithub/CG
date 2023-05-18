@@ -183,6 +183,13 @@ function createLeftArm() {
     
     mesh.position.set(0, 6, -8);
     cube1.add(mesh);
+    material = new THREE.MeshBasicMaterial ({color: 0xFF00FF, wireframe: false });
+    geometry = new THREE.CylinderGeometry(1, 1, 8, 30);
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(3, 13, -8);
+    cube1.add(mesh);
+
     cube1.position.set(6, 2, 2);
 
     scene.add(cube1);
@@ -203,6 +210,14 @@ function createRigthArm() {
     
     mesh.position.set(0, 6, -8);
     cube1.add(mesh);
+
+    material = new THREE.MeshBasicMaterial ({color: 0xFF00FF, wireframe: false });
+    geometry = new THREE.CylinderGeometry(1, 1, 8, 30);
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(-3, 13, -8);
+    cube1.add(mesh);
+
     cube1.position.set(-6, 2, 2);
 
     scene.add(cube1);
