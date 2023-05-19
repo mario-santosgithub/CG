@@ -4,7 +4,7 @@
 var camera, camera1, camera2, camera3, camera4, camera5;
 var scene, renderer;
 var material, geometry, mesh;
-var right_arm, left_arm, chest, right_leg, left_leg, head;
+var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -197,6 +197,7 @@ function createLeftArm() {
 }
 
 function createRigthArm() {
+    'use strict';
     
     right_arm = new THREE.Object3D(); // right of the chest
     material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
@@ -225,6 +226,7 @@ function createRigthArm() {
 }
 
 function createHead(){
+    'use strict';
 
     head = new THREE.Object3D();
     
@@ -269,8 +271,9 @@ function createHead(){
 }
 
 function createLeftLeg() {
+    'use strict';
     
-    left_leg = new THREE.Object3D(); // right of the chest
+    left_leg = new THREE.Object3D(); // leg
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 16, 4)
     mesh = new THREE.Mesh(geometry, material);
@@ -299,19 +302,23 @@ function createLeftLeg() {
 
     scene.add(left_leg);
 
-    var cube2 = new THREE.Object3D(); // right of the chest
+    left_foot = new THREE.Object3D(); 
+    left_foot.userData = { movingUp: false, movingDown: false, step: 0, angle:0 };
+
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(5, 4, 8)
     mesh = new THREE.Mesh(geometry, material);
-
-    cube2.add(mesh);
-
-    cube2.position.set(4, -22, 0);
+    mesh.position.set(0, 0, 1);
+    var cube = new THREE.Object3D();
+    cube.add(mesh);
+    left_foot.add(cube)
+    left_foot.position.set(4, -22, -1);
     
-    scene.add(cube2);
+    scene.add(left_foot);
 }
 
 function createRightLeg() {
+    'use strict';
 
     right_leg = new THREE.Object3D(); // right of the chest
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
@@ -342,16 +349,19 @@ function createRightLeg() {
 
     scene.add(right_leg);
 
-    var cube2 = new THREE.Object3D(); // right of the chest
+    right_foot = new THREE.Object3D(); // right of the chest
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(5, 4, 8)
     mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 0, 1);
+    var cube = new THREE.Object3D();
 
-    cube2.add(mesh);
+    cube.add(mesh);
+    right_foot.add(cube);
 
-    cube2.position.set(-4, -22, 0);
+    right_foot.position.set(-4, -22, -1);
     
-    scene.add(cube2);
+    scene.add(right_foot);
     
 }
 
@@ -411,6 +421,7 @@ function init() {
     render();
 
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
 }
 
@@ -419,6 +430,35 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
+    
+    if (left_foot.userData.step <= 0) {
+        left_foot.userData.movingDown = false;
+    } 
+    if (left_foot.userData.step >= 30) {
+        left_foot.userData.movingUp = false;
+    }
+
+    if (left_foot.userData.movingUp) { 
+
+        left_foot.userData.step += 1 ;
+        left_foot.rotateX(Math.PI/60);
+        right_foot.rotateX(Math.PI/60);
+        
+        if (left_foot.userData.step == 30) {
+            left_foot.userData.movingUp = !left_foot.userData.movingUp;
+        }
+        
+    }
+    if (left_foot.userData.movingDown) {
+
+        left_foot.userData.step -= 1 ;
+        left_foot.rotateX(-Math.PI/60);
+        right_foot.rotateX(-Math.PI/60);
+        
+        if (left_foot.userData.step == 0) {
+            left_foot.userData.movingDown = !left_foot.userData.movingDown;
+        }
+    }
 
     render();
 
@@ -450,22 +490,32 @@ function onKeyDown(e) {
 
     switch (e.keyCode) {
 
-        case 49:
+        case 49: // 1
             camera = camera1;
             break;
-        case 50:
+        case 50: // 2
             camera = camera2;
             break;
-        case 51:
+        case 51: // 3
             camera = camera3;
             break;
-        case 52:
+        case 52: // 4
             camera = camera4;
             break;
-        case 53:
+        case 53: // 5
             camera = camera5;
             break;
-    }
+        case 65: // A
+        case 97: // a
+            // move left feet
+            left_foot.userData.movingUp = !left_foot.userData.movingUp;
+            break;
+
+        case 81: // Q
+        case 113: //q
+            // move right feet
+            left_foot.userData.movingDown = !left_foot.userData.movingDown;
+    }       
 }
 
 ///////////////////////
@@ -473,5 +523,19 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e){
     'use strict';
+
+    switch(e.keyCode) {
+        case 65: // A
+        case 97: // a
+            // move left foot
+            left_foot.userData.movingUp = !left_foot.userData.movingUp;
+            break;
+        case 81: // Q
+        case 113: //q
+            // move right feet
+            left_foot.userData.movingDown = !left_foot.userData.movingDown;
+
+
+    }
 
 }
