@@ -193,6 +193,8 @@ function createLeftArm() {
 
     left_arm.position.set(6, 2, 2);
 
+    left_arm.userData = { moving_out: false, moving_in: false, step: 0 };
+
     scene.add(left_arm);
 }
 
@@ -221,6 +223,8 @@ function createRigthArm() {
     right_arm.add(mesh);
 
     right_arm.position.set(-6, 2, 2);
+
+    right_arm.userData = { moving_out: false, moving_in: false, step: 0 };
 
     scene.add(right_arm);
 }
@@ -460,6 +464,30 @@ function animate() {
         }
     }
 
+    if(left_arm.userData.step >= 4 && right_arm.userData.step >= 4){
+        left_arm.userData.moving_out = false;
+        right_arm.userData.moving_out = false;
+    }
+
+    if(left_arm.userData.step <= 0 && right_arm.userData.step <= 0){
+        left_arm.userData.moving_in = false;
+        right_arm.userData.moving_in = false;
+    }
+
+    if(left_arm.userData.moving_out && right_arm.userData.moving_out){
+        left_arm.userData.step += 0.1;
+        right_arm.userData.step += 0.1;
+        left_arm.translateX(0.1);
+        right_arm.translateX(-0.1);
+    }
+
+    if(left_arm.userData.moving_in && right_arm.userData.moving_in){
+        left_arm.userData.step -= 0.1;
+        right_arm.userData.step -= 0.1;
+        left_arm.translateX(-0.1);
+        right_arm.translateX(0.1);
+    }
+
     render();
 
     requestAnimationFrame(animate);
@@ -515,6 +543,16 @@ function onKeyDown(e) {
         case 113: //q
             // move right feet
             left_foot.userData.movingDown = !left_foot.userData.movingDown;
+
+        case 68: //D
+        case 100: //d
+            right_arm.userData.moving_in = true;
+            left_arm.userData.moving_in = true;
+
+        case 69: //E
+        case 101: //e
+            right_arm.userData.moving_out = true;
+            left_arm.userData.moving_out = true;
     }       
 }
 
@@ -534,6 +572,16 @@ function onKeyUp(e){
         case 113: //q
             // move right feet
             left_foot.userData.movingDown = !left_foot.userData.movingDown;
+
+        case 68: //D
+        case 100: //d
+            right_arm.userData.moving_in = false;
+            left_arm.userData.moving_in = false;
+
+        case 69: //E
+        case 101: //e
+            right_arm.userData.moving_out = false;
+            left_arm.userData.moving_out = false;
 
 
     }
