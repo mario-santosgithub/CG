@@ -464,24 +464,24 @@ function animate() {
         }
     }
 
-    if(left_arm.userData.step >= 4 && right_arm.userData.step >= 4){
+    if(left_arm.userData.step >= 4){
         left_arm.userData.moving_out = false;
         right_arm.userData.moving_out = false;
     }
 
-    if(left_arm.userData.step <= 0 && right_arm.userData.step <= 0){
+    if(left_arm.userData.step <= 0){
         left_arm.userData.moving_in = false;
         right_arm.userData.moving_in = false;
     }
 
-    if(left_arm.userData.moving_out && right_arm.userData.moving_out){
+    if(left_arm.userData.moving_out){
         left_arm.userData.step += 0.1;
         right_arm.userData.step += 0.1;
         left_arm.translateX(0.1);
         right_arm.translateX(-0.1);
     }
 
-    if(left_arm.userData.moving_in && right_arm.userData.moving_in){
+    if(left_arm.userData.moving_in){
         left_arm.userData.step -= 0.1;
         right_arm.userData.step -= 0.1;
         left_arm.translateX(-0.1);
@@ -543,16 +543,18 @@ function onKeyDown(e) {
         case 113: //q
             // move right feet
             left_foot.userData.movingDown = !left_foot.userData.movingDown;
+            break;
 
         case 68: //D
         case 100: //d
-            right_arm.userData.moving_in = true;
-            left_arm.userData.moving_in = true;
-
+            right_arm.userData.moving_out = !right_arm.userData.moving_out;
+            left_arm.userData.moving_out = !left_arm.userData.moving_out;
+            break;
         case 69: //E
         case 101: //e
-            right_arm.userData.moving_out = true;
-            left_arm.userData.moving_out = true;
+            right_arm.userData.moving_in = !right_arm.userData.moving_in;
+            left_arm.userData.moving_in = !left_arm.userData.moving_in;
+            break;
     }       
 }
 
@@ -572,16 +574,18 @@ function onKeyUp(e){
         case 113: //q
             // move right feet
             left_foot.userData.movingDown = !left_foot.userData.movingDown;
+            break;
 
         case 68: //D
         case 100: //d
-            right_arm.userData.moving_in = false;
-            left_arm.userData.moving_in = false;
-
+            right_arm.userData.moving_out = !right_arm.userData.moving_out;
+            left_arm.userData.moving_out = !left_arm.userData.moving_out;
+            break;
         case 69: //E
         case 101: //e
-            right_arm.userData.moving_out = false;
-            left_arm.userData.moving_out = false;
+            right_arm.userData.moving_in = !right_arm.userData.moving_in;
+            left_arm.userData.moving_in = !left_arm.userData.moving_in;
+            break;
 
 
     }
