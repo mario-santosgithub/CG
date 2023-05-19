@@ -477,7 +477,7 @@ function animate() {
     if (head_pivot.userData.movingUp) { 
 
         head_pivot.userData.step += 1 ;
-        head_pivot.rotateX(Math.PI/30);
+        head_pivot.rotateX(-Math.PI/30);
         
         if (head_pivot.userData.step == 30) {
             head_pivot.userData.movingUp = !head_pivot.userData.movingUp;
@@ -511,7 +511,7 @@ function animate() {
     if (head_pivot.userData.movingDown) {
 
         head_pivot.userData.step -= 1 ;
-        head_pivot.rotateX(-Math.PI/30);
+        head_pivot.rotateX(Math.PI/30);
         
         if (head_pivot.userData.step == 0) {
             head_pivot.userData.movingDown = !head_pivot.userData.movingDown;
