@@ -4,7 +4,7 @@
 var camera, camera1, camera2, camera3, camera4, camera5;
 var scene, renderer;
 var material, geometry, mesh;
-var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head;
+var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head, head_pivot;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -233,45 +233,49 @@ function createHead(){
     'use strict';
 
     head = new THREE.Object3D();
-    
+    head_pivot = new THREE.Object3D(); 
+    head_pivot.userData = { movingUp: false, movingDown: false, step: 0};
+
     material = new THREE.MeshBasicMaterial ({color: 0x9B59B6, wireframe: false });
     geometry = new THREE.BoxGeometry(6, 6, 6);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(0, 0, 0);
+    mesh.position.set(0, 5, 0);
     head.add(mesh);
 
     material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
     geometry = new THREE.BoxGeometry(1, 1, 1);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(2, 0, 3);
+    mesh.position.set(2, 5, 3);
     head.add(mesh);
 
     material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
     geometry = new THREE.BoxGeometry(1, 1, 1);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(-2, 0, 3);
+    mesh.position.set(-2, 5, 3);
     head.add(mesh);
 
     material = new THREE.MeshBasicMaterial ({color: 0xFF00FF, wireframe: false });
     geometry = new THREE.CylinderGeometry(0.5, 0.5, 3, 30);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(3.5, 3.5, 0);
+    mesh.position.set(3.5, 8.5, 0);
     head.add(mesh);
 
     material = new THREE.MeshBasicMaterial ({color: 0xFF00FF, wireframe: false });
     geometry = new THREE.CylinderGeometry(0.5, 0.5, 3, 30);
     mesh = new THREE.Mesh(geometry, material);
 
-    mesh.position.set(-3.5, 3.5, 0);
+    mesh.position.set(-3.5, 8.5, 0);
     head.add(mesh);
 
-    head.position.set(0, 20, 0);
+    head_pivot.add(head);
 
-    scene.add(head);
+    head_pivot.position.set(0, 15, 0);
+
+    scene.add(head_pivot);
 }
 
 function createLeftLeg() {
@@ -464,6 +468,22 @@ function animate() {
         }
     }
 
+    if (head_pivot.userData.step <= 0){
+        head_pivot.userData.movingDown = false;
+    }
+    if (head_pivot.userData.step >= 30) {
+        head_pivot.userData.movingUp = false;
+    }
+    if (head_pivot.userData.movingUp) { 
+
+        head_pivot.userData.step += 1 ;
+        head_pivot.rotateX(Math.PI/30);
+        
+        if (head_pivot.userData.step == 30) {
+            head_pivot.userData.movingUp = !head_pivot.userData.movingUp;
+        }
+        
+    }
     if(left_arm.userData.step >= 4){
         left_arm.userData.moving_out = false;
         right_arm.userData.moving_out = false;
@@ -488,6 +508,15 @@ function animate() {
         right_arm.translateX(0.1);
     }
 
+    if (head_pivot.userData.movingDown) {
+
+        head_pivot.userData.step -= 1 ;
+        head_pivot.rotateX(-Math.PI/30);
+        
+        if (head_pivot.userData.step == 0) {
+            head_pivot.userData.movingDown = !head_pivot.userData.movingDown;
+        }
+    }
     render();
 
     requestAnimationFrame(animate);
@@ -544,7 +573,14 @@ function onKeyDown(e) {
             // move right feet
             left_foot.userData.movingDown = !left_foot.userData.movingDown;
             break;
-
+        case 82: // R
+        case 114:// r
+            head_pivot.userData.movingUp = !head_pivot.userData.movingUp;
+            break;
+        case 70: // F
+        case 102: // f
+            head_pivot.userData.movingDown = !head_pivot.userData.movingDown;
+            break;
         case 68: //D
         case 100: //d
             right_arm.userData.moving_out = !right_arm.userData.moving_out;
@@ -575,7 +611,14 @@ function onKeyUp(e){
             // move right feet
             left_foot.userData.movingDown = !left_foot.userData.movingDown;
             break;
-
+        case 82: // R
+        case 114:// r
+            head_pivot.userData.movingUp = !head_pivot.userData.movingUp;
+            break;
+        case 70: // F
+        case 102: // f
+            head_pivot.userData.movingDown = !head_pivot.userData.movingDown;
+            break;
         case 68: //D
         case 100: //d
             right_arm.userData.moving_out = !right_arm.userData.moving_out;
