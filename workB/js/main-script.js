@@ -282,12 +282,15 @@ function createLeftLeg() {
     'use strict';
     
     left_leg = new THREE.Object3D(); // leg
+    left_leg.userData = { movingUp: false, movingDown: false, step: 0, angle:0 };
+    
+    var leg = new THREE.Object3D();
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 16, 4)
     mesh = new THREE.Mesh(geometry, material);
     
-    mesh.position.set(0,10, -1)
-    left_leg.add(mesh);
+    mesh.position.set(0,20, -1)
+    leg.add(mesh);
 
     material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
     geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
@@ -295,20 +298,20 @@ function createLeftLeg() {
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
-    mesh.position.set(4, 1, 0);
-    left_leg.add(mesh);
+    mesh.position.set(3.81, 18, 1);
+    leg.add(mesh);
 
     mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
-    mesh.position.set(4, 8.5, 0);
+    mesh.position.set(3.81, 10.5, 1);
 
-    left_leg.add(mesh);
+    leg.add(mesh);
 
-    left_leg.position.set(4, -22, 0);
+    leg.position.set(4, -22, 2);
 
-    scene.add(left_leg);
+    scene.add(leg);
 
     left_foot = new THREE.Object3D(); 
     left_foot.userData = { movingUp: false, movingDown: false, step: 0, angle:0 };
@@ -320,21 +323,28 @@ function createLeftLeg() {
     var cube = new THREE.Object3D();
     cube.add(mesh);
     left_foot.add(cube)
-    left_foot.position.set(4, -22, -1);
+    left_foot.position.set(0, 9.2, -1);
     
-    scene.add(left_foot);
+    leg.add(left_foot);
+    leg.position.set(4, -30, 2);
+    left_leg.add(leg);
+    left_leg.position.set(0, -1.2, -2);
+    scene.add(left_leg);
 }
 
 function createRightLeg() {
     'use strict';
 
-    right_leg = new THREE.Object3D(); // right of the chest
+    right_leg = new THREE.Object3D(); // leg
+    right_leg.userData = { movingUp: false, movingDown: false, step: 0, angle:0 };
+
+    var leg = new THREE.Object3D();
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 16, 4)
     mesh = new THREE.Mesh(geometry, material);
-    
-    mesh.position.set(0, 10, -1)
-    right_leg.add(mesh);
+
+    mesh.position.set(0,20, -1)
+    leg.add(mesh);
 
     material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
     geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
@@ -342,34 +352,38 @@ function createRightLeg() {
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
-    mesh.position.set(-4, 1, 0);
-    right_leg.add(mesh);
+    mesh.position.set(-3.81, 18, 1);
+    leg.add(mesh);
 
     mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
-    mesh.position.set(-4, 8.5, 0);
+    mesh.position.set(-3.81, 10.5, 1);
 
-    right_leg.add(mesh);
+    leg.add(mesh);
 
-    right_leg.position.set(-4, -22, 0);
+    leg.position.set(4, -22, 2);
 
-    scene.add(right_leg);
+    scene.add(leg);
 
-    right_foot = new THREE.Object3D(); // right of the chest
+    right_foot = new THREE.Object3D(); 
+    right_foot.userData = { movingUp: false, movingDown: false, step: 0, angle:0 };
+
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(5, 4, 8)
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 0, 1);
     var cube = new THREE.Object3D();
-
     cube.add(mesh);
-    right_foot.add(cube);
+    right_foot.add(cube)
+    right_foot.position.set(0, 9.2, -1);
 
-    right_foot.position.set(-4, -22, -1);
-    
-    scene.add(right_foot);
+    leg.add(right_foot);
+    leg.position.set(-4, -30, 2);
+    right_leg.add(leg);
+    right_leg.position.set(0, -1.2, -2);
+    scene.add(right_leg);
     
 }
 
@@ -465,6 +479,35 @@ function animate() {
         
         if (left_foot.userData.step == 0) {
             left_foot.userData.movingDown = !left_foot.userData.movingDown;
+        }
+    }
+
+    if (left_leg.userData.step <= 0) {
+        left_leg.userData.movingDown = false;
+    } 
+    if (left_leg.userData.step >= 30) {
+        left_leg.userData.movingUp = false;
+    }
+
+    if (left_leg.userData.movingUp) { 
+
+        left_leg.userData.step += 1 ;
+        left_leg.rotateX(Math.PI/60);
+        right_leg.rotateX(Math.PI/60);
+        
+        if (left_leg.userData.step == 30) {
+            left_leg.userData.movingUp = !left_leg.userData.movingUp;
+        }
+        
+    }
+    if (left_leg.userData.movingDown) {
+
+        left_leg.userData.step -= 1 ;
+        left_leg.rotateX(-Math.PI/60);
+        right_leg.rotateX(-Math.PI/60);
+        
+        if (left_leg.userData.step == 0) {
+            left_leg.userData.movingDown = !left_foot.userData.movingDown;
         }
     }
 
@@ -567,11 +610,18 @@ function onKeyDown(e) {
             // move left feet
             left_foot.userData.movingUp = !left_foot.userData.movingUp;
             break;
-
         case 81: // Q
         case 113: //q
             // move right feet
             left_foot.userData.movingDown = !left_foot.userData.movingDown;
+            break;
+        case 83: // S
+        case 115: // s
+            left_leg.userData.movingUp = !left_leg.userData.movingUp;
+            break;
+        case 87: // W
+        case 119: // w
+            left_leg.userData.movingDown = !left_leg.userData.movingDown;
             break;
         case 82: // R
         case 114:// r
@@ -610,6 +660,14 @@ function onKeyUp(e){
         case 113: //q
             // move right feet
             left_foot.userData.movingDown = !left_foot.userData.movingDown;
+            break;
+        case 83: // S
+        case 115: // s
+            left_leg.userData.movingUp = !left_leg.userData.movingUp;
+            break;
+        case 87: // W
+        case 119: // w
+            left_leg.userData.movingDown = !left_leg.userData.movingDown;
             break;
         case 82: // R
         case 114:// r
