@@ -3,8 +3,9 @@
 //////////////////////
 var camera, camera1, camera2, camera3, camera4, camera5;
 var scene, renderer;
-var material, geometry, mesh;
+var material, geometry, mesh, wireFrameBool;
 var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head, head_pivot;
+var trailer;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -24,6 +25,8 @@ function createScene() {
     createRightLeg();
     createHead();
 
+    createTrailer();
+
 }
 
 //////////////////////
@@ -33,24 +36,41 @@ function createScene() {
 // Frontal
 function createCamera1() {
     'use strict';
-    camera1 = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
+    
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const frustumSize = 100;
+
+    camera1 = new THREE.OrthographicCamera(
+        frustumSize * aspectRatio / -2,
+        frustumSize * aspectRatio / 2,
+        frustumSize / 2,
+        frustumSize / -2,
+        1,
+        1000
+    );
+
     camera1.position.x = 0;
     camera1.position.y = 0;
-    camera1.position.z = 50;
+    camera1.position.z = 100;
     camera1.lookAt(scene.position);
 }
 
 // Lateral
 function createCamera2() {
     'use strict';
-    camera2 = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
-    camera2.position.x = 50;
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const frustumSize = 100;
+
+    camera2 = new THREE.OrthographicCamera(
+        frustumSize * aspectRatio / -2,
+        frustumSize * aspectRatio / 2,
+        frustumSize / 2,
+        frustumSize / -2,
+        1,
+        1000
+    );
+
+    camera2.position.x = 100;
     camera2.position.y = 0;
     camera2.position.z = 0;
     camera2.lookAt(scene.position);
@@ -59,12 +79,20 @@ function createCamera2() {
 // Topo
 function createCamera3() {
     'use strict';
-    camera3 = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const frustumSize = 100;
+
+    camera3 = new THREE.OrthographicCamera(
+        frustumSize * aspectRatio / -2,
+        frustumSize * aspectRatio / 2,
+        frustumSize / 2,
+        frustumSize / -2,
+        1,
+        1000
+    );
+
     camera3.position.x = 0;
-    camera3.position.y = 50;
+    camera3.position.y = 100;
     camera3.position.z = 0;
     camera3.lookAt(scene.position);
 }
@@ -72,13 +100,22 @@ function createCamera3() {
 // Ortogonal
 function createCamera4() {
     'use strict';
-    camera4 = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
-    camera4.position.x = 50;
-    camera4.position.y = 50;
-    camera4.position.z = 50;
+
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const frustumSize = 100;
+
+    camera4 = new THREE.OrthographicCamera(
+        frustumSize * aspectRatio / -2,
+        frustumSize * aspectRatio / 2,
+        frustumSize / 2,
+        frustumSize / -2,
+        1,
+        1000
+    );
+
+    camera4.position.x = 100;
+    camera4.position.y = 100;
+    camera4.position.z = 100;
     camera4.lookAt(scene.position);
 }
 
@@ -89,12 +126,21 @@ function createCamera5() {
                                          window.innerWidth / window.innerHeight,
                                          1,
                                          1000);
-    camera5.position.x = 0;
-    camera5.position.y = 0;
-    camera5.position.z = 100;
+    camera5.position.x = 80;
+    camera5.position.y = 80;
+    camera5.position.z = 80;
     camera5.lookAt(scene.position);
     camera5.rotateZ(Math.PI);
+
+    /*camera5.position.x = -80;
+    camera5.position.y = 15;
+    camera5.position.z = -60;
+    camera5.lookAt(trailer.position);
+    camera5.rotateZ(Math.PI);
+    */
+    
 }
+
 
 /////////////////////
 /* CREATE LIGHT(S) */
@@ -103,6 +149,64 @@ function createCamera5() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
+
+function createTrailer() {
+    'use strict';
+
+    trailer = new THREE.Object3D(); // abdomen of the chest
+    material = new THREE.MeshBasicMaterial ({color: 0x00ff210, wireframe: false });
+    geometry = new THREE.BoxGeometry(20, 30, 60);
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(0, 0, 0);
+
+    trailer.add(mesh);
+
+    material = new THREE.MeshBasicMaterial ({color: 0xffff210, wireframe: false });
+    geometry = new THREE.BoxGeometry(20, 4, 20);
+    mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(0,-17,-20);
+    trailer.add(mesh);
+
+
+    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
+    geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+
+    mesh.position.set(10, -19, -25);
+    trailer.add(mesh);
+
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+    
+    mesh.position.set(10, -19, -16);
+    trailer.add(mesh);
+
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+    
+    mesh.position.set(-10, -19, -16);
+    trailer.add(mesh);
+
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.z = Math.PI / 2;
+    
+    mesh.position.set(-10, -19, -25);
+    trailer.add(mesh);
+
+    trailer.position.set(0,15,-60);
+
+
+    scene.add(trailer);
+
+
+}
 
 function createChest() {
     'use strict'
@@ -153,7 +257,7 @@ function createChest() {
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
-    mesh.position.set(10, -4, 2);
+    mesh.position.set(9, -4, 2);
     chest.add(mesh);
 
     material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
@@ -162,7 +266,7 @@ function createChest() {
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
-    mesh.position.set(-10, -4, 2);
+    mesh.position.set(-9, -4, 2);
     chest.add(mesh);
 
     scene.add(chest);
@@ -273,7 +377,7 @@ function createHead(){
 
     head_pivot.add(head);
 
-    head_pivot.position.set(0, 15, 0);
+    head_pivot.position.set(0, 14, 0);
 
     scene.add(head_pivot);
 }
@@ -286,7 +390,7 @@ function createLeftLeg() {
     
     var leg = new THREE.Object3D();
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
-    geometry = new THREE.BoxGeometry(4, 16, 4)
+    geometry = new THREE.BoxGeometry(4, 18, 4)
     mesh = new THREE.Mesh(geometry, material);
     
     mesh.position.set(0,20, -1)
@@ -298,7 +402,7 @@ function createLeftLeg() {
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
-    mesh.position.set(3.81, 18, 1);
+    mesh.position.set(3.51, 18, 1);
     leg.add(mesh);
 
     mesh = new THREE.Mesh(geometry, material);
@@ -340,7 +444,7 @@ function createRightLeg() {
 
     var leg = new THREE.Object3D();
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
-    geometry = new THREE.BoxGeometry(4, 16, 4)
+    geometry = new THREE.BoxGeometry(4, 18, 4)
     mesh = new THREE.Mesh(geometry, material);
 
     mesh.position.set(0,20, -1)
@@ -352,7 +456,7 @@ function createRightLeg() {
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
-    mesh.position.set(-3.81, 18, 1);
+    mesh.position.set(-3.51, 18, 1);
     leg.add(mesh);
 
     mesh = new THREE.Mesh(geometry, material);
@@ -429,7 +533,7 @@ function init() {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
+    wireFrameBool = false;
     createScene();
 
     createCamera1();
@@ -604,6 +708,13 @@ function onKeyDown(e) {
             break;
         case 53: // 5
             camera = camera5;
+            break;
+        case 54: // 6
+            scene.traverse(function (node) {
+            if (node instanceof THREE.Mesh) {
+                node.material.wireframe = !node.material.wireframe;
+            }
+        });
             break;
         case 65: // A
         case 97: // a
