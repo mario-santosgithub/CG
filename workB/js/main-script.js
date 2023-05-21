@@ -5,7 +5,8 @@ var camera, camera1, camera2, camera3, camera4, camera5;
 var scene, renderer;
 var material, geometry, mesh, wireFrameBool;
 var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head, head_pivot;
-var trailer;
+var trailer, colisionTruck, colisionTrailer;
+var maxPointTrailer, minPointTrailer, maxPointTruck, minPointTruck;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -26,6 +27,7 @@ function createScene() {
     createHead();
 
     createTrailer();
+
 
 }
 
@@ -130,15 +132,7 @@ function createCamera5() {
     camera5.position.y = 80;
     camera5.position.z = 80;
     camera5.lookAt(scene.position);
-    camera5.rotateZ(Math.PI);
-
-    /*camera5.position.x = -80;
-    camera5.position.y = 15;
-    camera5.position.z = -60;
-    camera5.lookAt(trailer.position);
-    camera5.rotateZ(Math.PI);
-    */
-    
+    camera5.rotateZ(Math.PI);    
 }
 
 
@@ -202,7 +196,7 @@ function createTrailer() {
 
     trailer.position.set(0,15,-60);
 
-    trailer.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0};
+    trailer.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0, colisions: true};
 
     scene.add(trailer);
 
@@ -492,11 +486,36 @@ function createRightLeg() {
     
 }
 
+
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
 function checkCollisions(){
     'use strict';
+
+    minPointTrailer = new THREE.Vector3(trailer.position.x-10,trailer.position.y-15, trailer.position.z-30);
+    maxPointTrailer = new THREE.Vector3(trailer.position.x+10,trailer.position.y+15, trailer.position.z+30);
+
+    minPointTruck = new THREE.Vector3(chest.position.x-8, chest.position.y-10, chest.position.z-8);
+    maxPointTruck = new THREE.Vector3(chest.position.x+8, chest.position.y+10, chest.position.z+8);
+
+    console.log(minPointTrailer);
+    console.log(maxPointTrailer);
+
+    console.log(minPointTruck);
+    console.log(maxPointTruck);
+
+    if (minPointTrailer.x <= maxPointTruck.x &&
+        maxPointTrailer.x >= minPointTruck.x &&
+        minPointTrailer.y <= maxPointTruck.y &&
+        maxPointTrailer.y >= minPointTruck.y &&
+        minPointTrailer.z <= maxPointTruck.z &&
+        maxPointTrailer.z >= minPointTruck.z) {
+
+            return true;
+        }
+
+    return false;
 
 }
 
@@ -557,10 +576,47 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
+    
+    checkCollisions();
+    
 
-    trailer.translateX(0.5 * ( trailer.userData.moving_left - trailer.userData.moving_right ));
+    if (maxPointTruck.x - minPointTrailer.x <= 0.5 && 
+        minPointTrailer.x + 0.5*( trailer.userData.moving_left - trailer.userData.moving_right ) < maxPointTruck.x &&
+        minPointTrailer.z <= maxPointTruck.z &&
+        maxPointTrailer.z >= minPointTruck.z) {
+        trailer.translateX((maxPointTruck.x - minPointTrailer.x) * ( trailer.userData.moving_left - trailer.userData.moving_right ));
+    }
 
-    trailer.translateZ(0.5 * ( trailer.userData.moving_forward - trailer.userData.moving_back ));
+    else if (maxPointTrailer.x - minPointTruck.x <= 0.5 &&
+        maxPointTrailer.x + 0.5*( trailer.userData.moving_left - trailer.userData.moving_right ) > minPointTruck.x &&
+        minPointTrailer.z <= maxPointTruck.z &&
+        maxPointTrailer.z >= minPointTruck.z) {
+        trailer.translateX((maxPointTrailer.x - minPointTruck.x) * ( trailer.userData.moving_left - trailer.userData.moving_right ));
+    }
+
+    else {
+        trailer.translateX(0.5 * ( trailer.userData.moving_left - trailer.userData.moving_right ));
+    }
+
+    if (maxPointTruck.z - minPointTrailer.z <= 0.5 &&
+        minPointTrailer.z + 0.5*( trailer.userData.moving_forward - trailer.userData.moving_back ) < maxPointTruck.z &&
+        minPointTrailer.x <= maxPointTruck.x &&
+        maxPointTrailer.x >= minPointTruck.x) {
+        trailer.translateZ((maxPointTruck.z - minPointTrailer.z) * ( trailer.userData.moving_forward - trailer.userData.moving_back ));
+    }
+
+    else if (minPointTruck.z - maxPointTrailer.z <= 0.5 &&
+        maxPointTrailer.z + 0.5*( trailer.userData.moving_forward - trailer.userData.moving_back ) > minPointTruck.z &&
+        minPointTrailer.x <= maxPointTruck.x &&
+        maxPointTrailer.x >= minPointTruck.x) {
+        trailer.translateZ((maxPointTrailer.z - minPointTruck.z) * ( trailer.userData.moving_forward - trailer.userData.moving_back));
+    }
+
+    else {
+        trailer.translateZ(0.5 * ( trailer.userData.moving_forward - trailer.userData.moving_back ));
+    }
+
+
 
     var movement_feet = 1 * (left_foot.userData.movingDown - left_foot.userData.movingUp);
     var feet_updated_step = left_foot.userData.step + movement_feet;
@@ -585,9 +641,9 @@ function animate() {
     }
 
     var movement_head = 1 * (head_pivot.userData.movingUp - head_pivot.userData.movingDown);
-    var leg_updated_step = head_pivot.userData.step + movement_head;
+    var head_updated_step = head_pivot.userData.step + movement_head;
 
-    if (leg_updated_step <= 40 && leg_updated_step >= 0) { 
+    if (head_updated_step <= 40 && head_updated_step >= 0) { 
 
         head_pivot.userData.step += movement_head ;
         head_pivot.rotation.x -= Math.PI/40 * movement_head;
@@ -601,6 +657,13 @@ function animate() {
         left_arm.translateX(movement_arms);
         right_arm.translateX(-movement_arms);
     }
+
+    if (feet_updated_step == 30 && leg_updated_step == 30 && head_updated_step == 40 && arm_updated_step == 0) {
+
+        if (checkCollisions()) {
+            handleCollisions();
+        }
+    } 
 
     render();
     requestAnimationFrame(animate);
