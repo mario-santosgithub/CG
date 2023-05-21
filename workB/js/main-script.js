@@ -202,6 +202,7 @@ function createTrailer() {
 
     trailer.position.set(0,15,-60);
 
+    trailer.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0};
 
     scene.add(trailer);
 
@@ -297,7 +298,7 @@ function createLeftArm() {
 
     left_arm.position.set(6, 2, 2);
 
-    left_arm.userData = { moving_out: false, moving_in: false, step: 0 };
+    left_arm.userData = { moving_out: 0, moving_in: 0, step: 0 };
 
     scene.add(left_arm);
 }
@@ -328,7 +329,7 @@ function createRigthArm() {
 
     right_arm.position.set(-6, 2, 2);
 
-    right_arm.userData = { moving_out: false, moving_in: false, step: 0 };
+    right_arm.userData = { moving_out: 0, moving_in: 0, step: 0 };
 
     scene.add(right_arm);
 }
@@ -338,7 +339,7 @@ function createHead(){
 
     head = new THREE.Object3D();
     head_pivot = new THREE.Object3D(); 
-    head_pivot.userData = { movingUp: false, movingDown: false, step: 0};
+    head_pivot.userData = { movingUp: 0, movingDown: 0, step: 0};
 
     material = new THREE.MeshBasicMaterial ({color: 0x9B59B6, wireframe: false });
     geometry = new THREE.BoxGeometry(6, 6, 6);
@@ -386,7 +387,7 @@ function createLeftLeg() {
     'use strict';
     
     left_leg = new THREE.Object3D(); // leg
-    left_leg.userData = { movingUp: false, movingDown: false, step: 0, angle:0 };
+    left_leg.userData = { movingUp: 0, movingDown: 0, step: 0 };
     
     var leg = new THREE.Object3D();
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
@@ -418,7 +419,7 @@ function createLeftLeg() {
     scene.add(leg);
 
     left_foot = new THREE.Object3D(); 
-    left_foot.userData = { movingUp: false, movingDown: false, step: 0, angle:0 };
+    left_foot.userData = { movingUp: 0, movingDown: 0, step: 0 };
 
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(5, 4, 8)
@@ -432,7 +433,7 @@ function createLeftLeg() {
     leg.add(left_foot);
     leg.position.set(4, -30, 2);
     left_leg.add(leg);
-    left_leg.position.set(0, -1.2, -2);
+    left_leg.position.set(0, -1, -2);
     scene.add(left_leg);
 }
 
@@ -440,7 +441,7 @@ function createRightLeg() {
     'use strict';
 
     right_leg = new THREE.Object3D(); // leg
-    right_leg.userData = { movingUp: false, movingDown: false, step: 0, angle:0 };
+    right_leg.userData = { movingUp: 0, movingDown: 0, step: 0 };
 
     var leg = new THREE.Object3D();
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
@@ -472,7 +473,7 @@ function createRightLeg() {
     scene.add(leg);
 
     right_foot = new THREE.Object3D(); 
-    right_foot.userData = { movingUp: false, movingDown: false, step: 0, angle:0 };
+    right_foot.userData = { movingUp: 0, movingDown: 0, step: 0 };     // tirado angle: 0 não estava a fazer nada
 
     material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(5, 4, 8)
@@ -486,7 +487,7 @@ function createRightLeg() {
     leg.add(right_foot);
     leg.position.set(-4, -30, 2);
     right_leg.add(leg);
-    right_leg.position.set(0, -1.2, -2);
+    right_leg.position.set(0, -1, -2);     // estava -1.2 na altura , havia 2 pixeis das pernas abaixo da cabine
     scene.add(right_leg);
     
 }
@@ -556,116 +557,52 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
-    
-    if (left_foot.userData.step <= 0) {
-        left_foot.userData.movingDown = false;
-    } 
-    if (left_foot.userData.step >= 30) {
-        left_foot.userData.movingUp = false;
-    }
 
-    if (left_foot.userData.movingUp) { 
+    trailer.translateX(0.5 * ( trailer.userData.moving_left - trailer.userData.moving_right ));
 
-        left_foot.userData.step += 1 ;
-        left_foot.rotateX(Math.PI/60);
-        right_foot.rotateX(Math.PI/60);
-        
-        if (left_foot.userData.step == 30) {
-            left_foot.userData.movingUp = !left_foot.userData.movingUp;
-        }
+    trailer.translateZ(0.5 * ( trailer.userData.moving_forward - trailer.userData.moving_back ));
+
+    var movement_feet = 1 * (left_foot.userData.movingDown - left_foot.userData.movingUp);
+    var feet_updated_step = left_foot.userData.step + movement_feet;
+
+    if (feet_updated_step <= 30 && feet_updated_step >= 0) { 
+
+        left_foot.userData.step += movement_feet ;
+        left_foot.rotation.x += Math.PI/60 * movement_feet;
+        right_foot.rotation.x += Math.PI/60 * movement_feet;
         
     }
-    if (left_foot.userData.movingDown) {
 
-        left_foot.userData.step -= 1 ;
-        left_foot.rotateX(-Math.PI/60);
-        right_foot.rotateX(-Math.PI/60);
-        
-        if (left_foot.userData.step == 0) {
-            left_foot.userData.movingDown = !left_foot.userData.movingDown;
-        }
-    }
+    var movement_legs = 1 * (left_leg.userData.movingUp - left_leg.userData.movingDown);
+    var leg_updated_step = left_leg.userData.step + movement_legs;
 
-    if (left_leg.userData.step <= 0) {
-        left_leg.userData.movingDown = false;
-    } 
-    if (left_leg.userData.step >= 30) {
-        left_leg.userData.movingUp = false;
-    }
+    if (leg_updated_step <= 30 && leg_updated_step >= 0) { 
 
-    if (left_leg.userData.movingUp) { 
-
-        left_leg.userData.step += 1 ;
-        left_leg.rotateX(Math.PI/60);
-        right_leg.rotateX(Math.PI/60);
-        
-        if (left_leg.userData.step == 30) {
-            left_leg.userData.movingUp = !left_leg.userData.movingUp;
-        }
+        left_leg.userData.step += movement_legs ;
+        left_leg.rotation.x += Math.PI/60 * movement_legs;
+        right_leg.rotation.x += Math.PI/60 * movement_legs;
         
     }
-    if (left_leg.userData.movingDown) {
 
-        left_leg.userData.step -= 1 ;
-        left_leg.rotateX(-Math.PI/60);
-        right_leg.rotateX(-Math.PI/60);
-        
-        if (left_leg.userData.step == 0) {
-            left_leg.userData.movingDown = !left_foot.userData.movingDown;
-        }
-    }
+    var movement_head = 1 * (head_pivot.userData.movingUp - head_pivot.userData.movingDown);
+    var leg_updated_step = head_pivot.userData.step + movement_head;
 
-    if (head_pivot.userData.step <= 0){
-        head_pivot.userData.movingDown = false;
-    }
-    if (head_pivot.userData.step >= 30) {
-        head_pivot.userData.movingUp = false;
-    }
-    if (head_pivot.userData.movingUp) { 
+    if (leg_updated_step <= 40 && leg_updated_step >= 0) { 
 
-        head_pivot.userData.step += 1 ;
-        head_pivot.rotateX(-Math.PI/30);
-        
-        if (head_pivot.userData.step == 30) {
-            head_pivot.userData.movingUp = !head_pivot.userData.movingUp;
-        }
-        
-    }
-    if(left_arm.userData.step >= 4){
-        left_arm.userData.moving_out = false;
-        right_arm.userData.moving_out = false;
+        head_pivot.userData.step += movement_head ;
+        head_pivot.rotation.x -= Math.PI/40 * movement_head;
     }
 
-    if(left_arm.userData.step <= 0){
-        left_arm.userData.moving_in = false;
-        right_arm.userData.moving_in = false;
+    var movement_arms = 0.15 * (left_arm.userData.moving_out - left_arm.userData.moving_in);
+    var arm_updated_step = left_arm.userData.step +  movement_arms;
+
+    if( arm_updated_step <= 4 && arm_updated_step >= 0 ){
+        left_arm.userData.step = arm_updated_step;
+        left_arm.translateX(movement_arms);
+        right_arm.translateX(-movement_arms);
     }
 
-    if(left_arm.userData.moving_out){
-        left_arm.userData.step += 0.1;
-        right_arm.userData.step += 0.1;
-        left_arm.translateX(0.1);
-        right_arm.translateX(-0.1);
-    }
-
-    if(left_arm.userData.moving_in){
-        left_arm.userData.step -= 0.1;
-        right_arm.userData.step -= 0.1;
-        left_arm.translateX(-0.1);
-        right_arm.translateX(0.1);
-    }
-
-    if (head_pivot.userData.movingDown) {
-
-        head_pivot.userData.step -= 1 ;
-        head_pivot.rotateX(Math.PI/30);
-        
-        if (head_pivot.userData.step == 0) {
-            head_pivot.userData.movingDown = !head_pivot.userData.movingDown;
-        }
-    }
     render();
-
     requestAnimationFrame(animate);
 
 }
@@ -693,6 +630,18 @@ function onKeyDown(e) {
     'use strict';
 
     switch (e.keyCode) {
+        case 37:
+            trailer.userData.moving_left = 1;
+            break;
+        case 38:
+            trailer.userData.moving_forward = 1;
+            break;
+        case 39:
+            trailer.userData.moving_right = 1;
+            break;
+        case 40:
+            trailer.userData.moving_back = 1;
+            break;
 
         case 49: // 1
             camera = camera1;
@@ -719,38 +668,42 @@ function onKeyDown(e) {
         case 65: // A
         case 97: // a
             // move left feet
-            left_foot.userData.movingUp = !left_foot.userData.movingUp;
+            left_foot.userData.movingDown = 1;
+            right_foot.userData.movingDown = 1;
             break;
         case 81: // Q
         case 113: //q
             // move right feet
-            left_foot.userData.movingDown = !left_foot.userData.movingDown;
+            left_foot.userData.movingUp = 1;
+            right_foot.userData.movingUp = 1;
             break;
         case 83: // S
         case 115: // s
-            left_leg.userData.movingUp = !left_leg.userData.movingUp;
+            left_leg.userData.movingUp = 1;
+            right_leg.userData.movingUp = 1;
             break;
         case 87: // W
         case 119: // w
-            left_leg.userData.movingDown = !left_leg.userData.movingDown;
+            left_leg.userData.movingDown = 1;
+            right_leg.userData.movingDown = 1;
             break;
         case 82: // R
         case 114:// r
-            head_pivot.userData.movingUp = !head_pivot.userData.movingUp;
+            head_pivot.userData.movingDown = 1;
             break;
         case 70: // F
         case 102: // f
-            head_pivot.userData.movingDown = !head_pivot.userData.movingDown;
+            head_pivot.userData.movingUp = 1;
             break;
         case 68: //D
         case 100: //d
-            right_arm.userData.moving_out = !right_arm.userData.moving_out;
-            left_arm.userData.moving_out = !left_arm.userData.moving_out;
+            right_arm.userData.moving_out = 1;
+            left_arm.userData.moving_out = 1;
             break;
         case 69: //E
         case 101: //e
-            right_arm.userData.moving_in = !right_arm.userData.moving_in;
-            left_arm.userData.moving_in = !left_arm.userData.moving_in;
+            right_arm.userData.moving_in = 1;
+            left_arm.userData.moving_in = 1;
             break;
     }       
 }
@@ -762,41 +715,57 @@ function onKeyUp(e){
     'use strict';
 
     switch(e.keyCode) {
+        case 37:
+            trailer.userData.moving_left = 0;
+            break;
+        case 38:
+            trailer.userData.moving_forward = 0;
+            break;
+        case 39:
+            trailer.userData.moving_right = 0;
+            break;
+        case 40:
+            trailer.userData.moving_back = 0;
+            break;
         case 65: // A
         case 97: // a
             // move left foot
-            left_foot.userData.movingUp = !left_foot.userData.movingUp;
+            left_foot.userData.movingDown = 0;
+            right_foot.userData.movingDown = 0;
             break;
         case 81: // Q
         case 113: //q
             // move right feet
-            left_foot.userData.movingDown = !left_foot.userData.movingDown;
+            left_foot.userData.movingUp = 0;
+            right_foot.userData.movingUp = 0;
             break;
         case 83: // S
         case 115: // s
-            left_leg.userData.movingUp = !left_leg.userData.movingUp;
+            left_leg.userData.movingUp = 0;
+            right_leg.userData.movingUp = 0;
             break;
         case 87: // W
         case 119: // w
-            left_leg.userData.movingDown = !left_leg.userData.movingDown;
+            left_leg.userData.movingDown = 0;
+            right_leg.userData.movingDown = 0;
             break;
         case 82: // R
         case 114:// r
-            head_pivot.userData.movingUp = !head_pivot.userData.movingUp;
+            head_pivot.userData.movingDown = 0;
             break;
         case 70: // F
         case 102: // f
-            head_pivot.userData.movingDown = !head_pivot.userData.movingDown;
+            head_pivot.userData.movingUp = 0;
             break;
         case 68: //D
         case 100: //d
-            right_arm.userData.moving_out = !right_arm.userData.moving_out;
-            left_arm.userData.moving_out = !left_arm.userData.moving_out;
+            right_arm.userData.moving_out = 0;
+            left_arm.userData.moving_out = 0;
             break;
         case 69: //E
         case 101: //e
-            right_arm.userData.moving_in = !right_arm.userData.moving_in;
-            left_arm.userData.moving_in = !left_arm.userData.moving_in;
+            right_arm.userData.moving_in = 0;
+            left_arm.userData.moving_in = 0;
             break;
 
 
