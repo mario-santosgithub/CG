@@ -8,7 +8,7 @@ var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head
 var trailer, colisionTruck, colisionTrailer;
 var maxPointTrailer, minPointTrailer, maxPointTruck, minPointTruck;
 
-var movements_allowed = true, animations_allowed = true;
+var movements_allowed = true, animations_allowed = true, cameras_allowed = true, reboque_ligado = false;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -498,14 +498,8 @@ function checkCollisions(){
     minPointTrailer = new THREE.Vector3(trailer.position.x-10,trailer.position.y-15, trailer.position.z-30);
     maxPointTrailer = new THREE.Vector3(trailer.position.x+10,trailer.position.y+15, trailer.position.z+30);
 
-    minPointTruck = new THREE.Vector3(chest.position.x-8, chest.position.y-10, chest.position.z-8);
+    minPointTruck = new THREE.Vector3(chest.position.x-8, chest.position.y-10, chest.position.z-28);
     maxPointTruck = new THREE.Vector3(chest.position.x+8, chest.position.y+10, chest.position.z+8);
-
-    /*console.log(minPointTrailer);
-    console.log(maxPointTrailer);
-
-    console.log(minPointTruck);
-    console.log(maxPointTruck);*/
 
     if (minPointTrailer.x <= maxPointTruck.x &&
         maxPointTrailer.x >= minPointTruck.x &&
@@ -555,7 +549,6 @@ function handleCollisions(){
 
     
     if(expectedPosition.x != maxPointTrailer.x || expectedPosition.z != maxPointTrailer.z){
-        console.log("hi")
         if (Math.abs(maxPointTrailer.x - expectedPosition.x) < 0.5) {
             trailer.translateX(Math.abs(maxPointTrailer.x - expectedPosition.x) * ( mov_left - mov_right ));
         }
@@ -568,6 +561,9 @@ function handleCollisions(){
         else{
             trailer.translateZ( 0.5 * ( mov_forward - mov_back ));
         }
+    }
+    else{
+        reboque_ligado = true;
     }
 
 
@@ -658,7 +654,7 @@ function animate() {
         head_pivot.rotation.x -= Math.PI/40 * movement_head;
     }
 
-    var movement_arms = 0.15 * (left_arm.userData.moving_out - left_arm.userData.moving_in);
+    var movement_arms = 0.25 * (left_arm.userData.moving_out - left_arm.userData.moving_in);
     var arm_updated_step = left_arm.userData.step +  movement_arms;
 
     if( arm_updated_step <= 4 && arm_updated_step >= 0 ){
@@ -670,12 +666,21 @@ function animate() {
     if (feet_updated_step == 30 && leg_updated_step == 30 && head_updated_step == 40 && arm_updated_step == 0) {
 
         if (checkCollisions()) {
-            resetMovement();
-            movements_allowed = false;
-            animations_allowed = false;
-            handleCollisions();
+            if(!reboque_ligado){
+                resetMovement();
+                movements_allowed = false;
+                animations_allowed = false;
+                cameras_allowed = false;
+                handleCollisions();
+            }
         }
-    } 
+        else{
+            reboque_ligado = false;
+            movements_allowed = true;
+            animations_allowed = true;
+            cameras_allowed = true;
+        }
+    }
 
     render();
     requestAnimationFrame(animate);
@@ -706,32 +711,50 @@ function onKeyDown(e) {
 
     switch (e.keyCode) {
         case 37:
-            if(movements_allowed){trailer.userData.moving_left = 1;}
+            if(movements_allowed || reboque_ligado){
+                trailer.userData.moving_left = 1;
+            }
             break;
         case 38:
-            if(movements_allowed){trailer.userData.moving_forward = 1};
+            if(movements_allowed || reboque_ligado){
+                trailer.userData.moving_forward = 1;
+            }
             break;
         case 39:
-            if(movements_allowed){trailer.userData.moving_right = 1};
+            if(movements_allowed || reboque_ligado){
+                trailer.userData.moving_right = 1;
+            }
             break;
         case 40:
-            if(movements_allowed){trailer.userData.moving_back = 1};
+            if(movements_allowed || reboque_ligado){
+                trailer.userData.moving_back = 1;
+            }
             break;
 
         case 49: // 1
-            camera = camera1;
+            if(cameras_allowed || reboque_ligado){
+                camera = camera1;
+            }
             break;
         case 50: // 2
-            camera = camera2;
+            if(cameras_allowed || reboque_ligado){
+                camera = camera2;
+            }
             break;
         case 51: // 3
-            camera = camera3;
+            if(cameras_allowed || reboque_ligado){
+                camera = camera3;
+            }
             break;
         case 52: // 4
-            camera = camera4;
+            if(cameras_allowed || reboque_ligado){
+                camera = camera4;
+            }
             break;
         case 53: // 5
-            camera = camera5;
+            if(cameras_allowed || reboque_ligado){
+                camera = camera5;
+            }
             break;
         case 54: // 6
             scene.traverse(function (node) {
@@ -807,16 +830,24 @@ function onKeyUp(e){
 
     switch(e.keyCode) {
         case 37:
-            if(movements_allowed){trailer.userData.moving_left = 0;}
+            if(movements_allowed || reboque_ligado){
+                trailer.userData.moving_left = 0;
+            }
             break;
         case 38:
-            if(movements_allowed){trailer.userData.moving_forward = 0};
+            if(movements_allowed || reboque_ligado){
+                trailer.userData.moving_forward = 0
+            };
             break;
         case 39:
-            if(movements_allowed){trailer.userData.moving_right = 0};
+            if(movements_allowed || reboque_ligado){
+                trailer.userData.moving_right = 0
+            };
             break;
         case 40:
-            if(movements_allowed){trailer.userData.moving_back = 0};
+            if(movements_allowed || reboque_ligado){
+                trailer.userData.moving_back = 0
+            };
             break;
         case 65: // A
         case 97: // a
