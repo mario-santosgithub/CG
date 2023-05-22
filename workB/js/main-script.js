@@ -8,6 +8,8 @@ var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head
 var trailer, colisionTruck, colisionTrailer;
 var maxPointTrailer, minPointTrailer, maxPointTruck, minPointTruck;
 
+var movements_allowed = true, animations_allowed = true;
+
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -499,11 +501,11 @@ function checkCollisions(){
     minPointTruck = new THREE.Vector3(chest.position.x-8, chest.position.y-10, chest.position.z-8);
     maxPointTruck = new THREE.Vector3(chest.position.x+8, chest.position.y+10, chest.position.z+8);
 
-    console.log(minPointTrailer);
+    /*console.log(minPointTrailer);
     console.log(maxPointTrailer);
 
     console.log(minPointTruck);
-    console.log(maxPointTruck);
+    console.log(maxPointTruck);*/
 
     if (minPointTrailer.x <= maxPointTruck.x &&
         maxPointTrailer.x >= minPointTruck.x &&
@@ -513,10 +515,17 @@ function checkCollisions(){
         maxPointTrailer.z >= minPointTruck.z) {
 
             return true;
-        }
+    }
 
     return false;
 
+}
+
+function resetMovement(){
+    trailer.userData.moving_left = 0;
+    trailer.userData.moving_right = 0;
+    trailer.userData.moving_forward = 0;
+    trailer.userData.moving_back = 0;
 }
 
 ///////////////////////
@@ -524,6 +533,43 @@ function checkCollisions(){
 ///////////////////////
 function handleCollisions(){
     'use strict';
+
+    // 10, 30, -8
+
+    var expectedPosition = new THREE.Vector3(10, 30, -9);
+    var mov_left = 0, mov_right = 0, mov_forward = 0, mov_back = 0;
+
+    if (maxPointTrailer.x < expectedPosition.x) {
+        mov_left = 1;
+    }
+    else if (maxPointTrailer.x > expectedPosition.x){
+        mov_right = 1;
+    }
+
+    if (maxPointTrailer.z < expectedPosition.z) {
+        mov_forward = 1;
+    }
+    else if (maxPointTrailer.z > expectedPosition.z){
+        mov_back = 1;
+    }
+
+    
+    if(expectedPosition.x != maxPointTrailer.x || expectedPosition.z != maxPointTrailer.z){
+        console.log("hi")
+        if (Math.abs(maxPointTrailer.x - expectedPosition.x) < 0.5) {
+            trailer.translateX(Math.abs(maxPointTrailer.x - expectedPosition.x) * ( mov_left - mov_right ));
+        }
+        else{
+            trailer.translateX( 0.5 * ( mov_left - mov_right ));
+        }
+        if (Math.abs(maxPointTrailer.z - expectedPosition.z) < 0.5) {
+            trailer.translateZ(Math.abs(maxPointTrailer.z - expectedPosition.z) * ( mov_forward - mov_back ));
+        }
+        else{
+            trailer.translateZ( 0.5 * ( mov_forward - mov_back ));
+        }
+    }
+
 
 }
 
@@ -576,47 +622,10 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
-    
-    checkCollisions();
-    
 
-    if (maxPointTruck.x - minPointTrailer.x <= 0.5 && 
-        minPointTrailer.x + 0.5*( trailer.userData.moving_left - trailer.userData.moving_right ) < maxPointTruck.x &&
-        minPointTrailer.z <= maxPointTruck.z &&
-        maxPointTrailer.z >= minPointTruck.z) {
-        trailer.translateX((maxPointTruck.x - minPointTrailer.x) * ( trailer.userData.moving_left - trailer.userData.moving_right ));
-    }
+    trailer.translateX(0.5 * ( trailer.userData.moving_left - trailer.userData.moving_right ));
 
-    else if (maxPointTrailer.x - minPointTruck.x <= 0.5 &&
-        maxPointTrailer.x + 0.5*( trailer.userData.moving_left - trailer.userData.moving_right ) > minPointTruck.x &&
-        minPointTrailer.z <= maxPointTruck.z &&
-        maxPointTrailer.z >= minPointTruck.z) {
-        trailer.translateX((maxPointTrailer.x - minPointTruck.x) * ( trailer.userData.moving_left - trailer.userData.moving_right ));
-    }
-
-    else {
-        trailer.translateX(0.5 * ( trailer.userData.moving_left - trailer.userData.moving_right ));
-    }
-
-    if (maxPointTruck.z - minPointTrailer.z <= 0.5 &&
-        minPointTrailer.z + 0.5*( trailer.userData.moving_forward - trailer.userData.moving_back ) < maxPointTruck.z &&
-        minPointTrailer.x <= maxPointTruck.x &&
-        maxPointTrailer.x >= minPointTruck.x) {
-        trailer.translateZ((maxPointTruck.z - minPointTrailer.z) * ( trailer.userData.moving_forward - trailer.userData.moving_back ));
-    }
-
-    else if (minPointTruck.z - maxPointTrailer.z <= 0.5 &&
-        maxPointTrailer.z + 0.5*( trailer.userData.moving_forward - trailer.userData.moving_back ) > minPointTruck.z &&
-        minPointTrailer.x <= maxPointTruck.x &&
-        maxPointTrailer.x >= minPointTruck.x) {
-        trailer.translateZ((maxPointTrailer.z - minPointTruck.z) * ( trailer.userData.moving_forward - trailer.userData.moving_back));
-    }
-
-    else {
-        trailer.translateZ(0.5 * ( trailer.userData.moving_forward - trailer.userData.moving_back ));
-    }
-
-
+    trailer.translateZ(0.5 * ( trailer.userData.moving_forward - trailer.userData.moving_back ));
 
     var movement_feet = 1 * (left_foot.userData.movingDown - left_foot.userData.movingUp);
     var feet_updated_step = left_foot.userData.step + movement_feet;
@@ -661,6 +670,9 @@ function animate() {
     if (feet_updated_step == 30 && leg_updated_step == 30 && head_updated_step == 40 && arm_updated_step == 0) {
 
         if (checkCollisions()) {
+            resetMovement();
+            movements_allowed = false;
+            animations_allowed = false;
             handleCollisions();
         }
     } 
@@ -694,16 +706,16 @@ function onKeyDown(e) {
 
     switch (e.keyCode) {
         case 37:
-            trailer.userData.moving_left = 1;
+            if(movements_allowed){trailer.userData.moving_left = 1;}
             break;
         case 38:
-            trailer.userData.moving_forward = 1;
+            if(movements_allowed){trailer.userData.moving_forward = 1};
             break;
         case 39:
-            trailer.userData.moving_right = 1;
+            if(movements_allowed){trailer.userData.moving_right = 1};
             break;
         case 40:
-            trailer.userData.moving_back = 1;
+            if(movements_allowed){trailer.userData.moving_back = 1};
             break;
 
         case 49: // 1
@@ -731,42 +743,58 @@ function onKeyDown(e) {
         case 65: // A
         case 97: // a
             // move left feet
-            left_foot.userData.movingDown = 1;
-            right_foot.userData.movingDown = 1;
+            if(animations_allowed){
+                left_foot.userData.movingDown = 1;
+                right_foot.userData.movingDown = 1;
+            }
             break;
         case 81: // Q
         case 113: //q
             // move right feet
-            left_foot.userData.movingUp = 1;
-            right_foot.userData.movingUp = 1;
+            if(animations_allowed){
+                left_foot.userData.movingUp = 1;
+                right_foot.userData.movingUp = 1;
+            }
             break;
         case 83: // S
         case 115: // s
-            left_leg.userData.movingUp = 1;
-            right_leg.userData.movingUp = 1;
+            if(animations_allowed){
+                left_leg.userData.movingUp = 1;
+                right_leg.userData.movingUp = 1;
+            }
             break;
         case 87: // W
         case 119: // w
-            left_leg.userData.movingDown = 1;
-            right_leg.userData.movingDown = 1;
+            if(animations_allowed){
+                left_leg.userData.movingDown = 1;
+                right_leg.userData.movingDown = 1;
+            }
             break;
         case 82: // R
         case 114:// r
-            head_pivot.userData.movingDown = 1;
+            if(animations_allowed){
+                head_pivot.userData.movingDown = 1;
+            }
             break;
         case 70: // F
         case 102: // f
-            head_pivot.userData.movingUp = 1;
+            if(animations_allowed){
+                head_pivot.userData.movingUp = 1;
+            }
             break;
         case 68: //D
         case 100: //d
-            right_arm.userData.moving_out = 1;
-            left_arm.userData.moving_out = 1;
+            if(animations_allowed){
+                right_arm.userData.moving_out = 1;
+                left_arm.userData.moving_out = 1;
+            }
             break;
         case 69: //E
         case 101: //e
-            right_arm.userData.moving_in = 1;
-            left_arm.userData.moving_in = 1;
+            if(animations_allowed){
+                right_arm.userData.moving_in = 1;
+                left_arm.userData.moving_in = 1;
+            }
             break;
     }       
 }
@@ -779,56 +807,72 @@ function onKeyUp(e){
 
     switch(e.keyCode) {
         case 37:
-            trailer.userData.moving_left = 0;
+            if(movements_allowed){trailer.userData.moving_left = 0;}
             break;
         case 38:
-            trailer.userData.moving_forward = 0;
+            if(movements_allowed){trailer.userData.moving_forward = 0};
             break;
         case 39:
-            trailer.userData.moving_right = 0;
+            if(movements_allowed){trailer.userData.moving_right = 0};
             break;
         case 40:
-            trailer.userData.moving_back = 0;
+            if(movements_allowed){trailer.userData.moving_back = 0};
             break;
         case 65: // A
         case 97: // a
             // move left foot
-            left_foot.userData.movingDown = 0;
-            right_foot.userData.movingDown = 0;
+            if(animations_allowed){
+                left_foot.userData.movingDown = 0;
+                right_foot.userData.movingDown = 0;
+            }
             break;
         case 81: // Q
         case 113: //q
             // move right feet
-            left_foot.userData.movingUp = 0;
-            right_foot.userData.movingUp = 0;
+            if(animations_allowed){
+                left_foot.userData.movingUp = 0;
+                right_foot.userData.movingUp = 0;
+            }
             break;
         case 83: // S
         case 115: // s
-            left_leg.userData.movingUp = 0;
-            right_leg.userData.movingUp = 0;
+            if(animations_allowed){
+                left_leg.userData.movingUp = 0;
+                right_leg.userData.movingUp = 0;
+            }
             break;
         case 87: // W
         case 119: // w
-            left_leg.userData.movingDown = 0;
-            right_leg.userData.movingDown = 0;
+            if(animations_allowed){
+                left_leg.userData.movingDown = 0;
+                right_leg.userData.movingDown = 0;
+            }
             break;
         case 82: // R
         case 114:// r
-            head_pivot.userData.movingDown = 0;
+            if(animations_allowed){
+                head_pivot.userData.movingDown = 0;
+            }
             break;
         case 70: // F
         case 102: // f
-            head_pivot.userData.movingUp = 0;
+            if(animations_allowed){
+                head_pivot.userData.movingUp = 0;
+            }
             break;
         case 68: //D
         case 100: //d
-            right_arm.userData.moving_out = 0;
-            left_arm.userData.moving_out = 0;
+            if(animations_allowed){
+                right_arm.userData.moving_out = 0;
+                left_arm.userData.moving_out = 0;
+            }
             break;
         case 69: //E
         case 101: //e
-            right_arm.userData.moving_in = 0;
-            left_arm.userData.moving_in = 0;
+            if(animations_allowed){
+                right_arm.userData.moving_in = 0;
+                left_arm.userData.moving_in = 0;
+            }
             break;
 
 
