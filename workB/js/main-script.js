@@ -7,7 +7,15 @@ var material, geometry, mesh, wireFrameBool;
 var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head, head_pivot;
 var trailer, colisionTruck, colisionTrailer;
 var maxPointTrailer, minPointTrailer, maxPointTruck, minPointTruck;
-
+var components = [m1 = new THREE.MeshBasicMaterial ({color: 0x00ff21, wireframe: false }),
+    m2 = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false }),
+    m3 = new THREE.MeshBasicMaterial ({color: 0xfb3210, wireframe: false }),
+    m4 = new THREE.MeshBasicMaterial ({color: 0x0000ff, wireframe: false }), 
+    m5 = new THREE.MeshBasicMaterial ({color: 0x00ffff, wireframe: false }),
+    m6 = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false }),
+    m7 = new THREE.MeshBasicMaterial ({color: 0x9B59B6, wireframe: false }),
+    m8 = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false }),
+    m9 = new THREE.MeshBasicMaterial ({color: 0xffff21, wireframe: false })]; 
 var movements_allowed = true, animations_allowed = true, cameras_allowed = true, reboque_ligado = false;
 
 /////////////////////
@@ -150,46 +158,42 @@ function createTrailer() {
     'use strict';
 
     trailer = new THREE.Object3D(); // abdomen of the chest
-    material = new THREE.MeshBasicMaterial ({color: 0x00ff210, wireframe: false });
     geometry = new THREE.BoxGeometry(20, 30, 60);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[0]);
 
     mesh.position.set(0, 0, 0);
 
     trailer.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0xffff210, wireframe: false });
     geometry = new THREE.BoxGeometry(20, 4, 20);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[8]);
 
     mesh.position.set(0,-17,-20);
     trailer.add(mesh);
 
-
-    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
     geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
     mesh.position.set(10, -19, -25);
     trailer.add(mesh);
 
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
     
     mesh.position.set(10, -19, -16);
     trailer.add(mesh);
 
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
     
     mesh.position.set(-10, -19, -16);
     trailer.add(mesh);
 
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
     
@@ -209,57 +213,46 @@ function createChest() {
     'use strict'
 
     chest = new THREE.Object3D(); // abdomen of the chest
-    material = new THREE.MeshBasicMaterial ({color: 0x00ff210, wireframe: false });
     geometry = new THREE.BoxGeometry(8, 4, 16);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[0]);
 
     mesh.position.set(0, 2, 0);
     chest.add(mesh);
 
-
-    material = new THREE.MeshBasicMaterial ({color: 0xfb3210, wireframe: false });
     geometry = new THREE.BoxGeometry(16, 4, 16);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[2]);
 
     mesh.position.set(0, -2, 0);
     chest.add(mesh);
 
-
-    material = new THREE.MeshBasicMaterial ({color: 0x0000ff, wireframe: false });
     geometry = new THREE.BoxGeometry(8, 12, 16);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[3]);
 
     mesh.position.set(0, 10, 0);
     chest.add(mesh);
 
-
-    material = new THREE.MeshBasicMaterial ({color: 0x00ffff, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 12, 12);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[4]);
 
     mesh.position.set(6, 10, 2);
     chest.add(mesh);
 
-
-    material = new THREE.MeshBasicMaterial ({color: 0x00ffff, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 12, 12);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[4]);
 
     mesh.position.set(-6, 10, 2);
     chest.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
     geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
     mesh.position.set(9, -4, 2);
     chest.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
     geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
@@ -273,21 +266,18 @@ function createLeftArm() {
     'use strict';
     
     left_arm = new THREE.Object3D(); // right of the chest
-    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 4, 12);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[5]);
 
     left_arm.add(mesh);
     
-    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 16, 4);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[5]);
     
     mesh.position.set(0, 6, -8);
     left_arm.add(mesh);
-    material = new THREE.MeshBasicMaterial ({color: 0xFF00FF, wireframe: false });
     geometry = new THREE.CylinderGeometry(1, 1, 8, 30);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
 
     mesh.position.set(3, 13, -8);
     left_arm.add(mesh);
@@ -303,22 +293,19 @@ function createRigthArm() {
     'use strict';
     
     right_arm = new THREE.Object3D(); // right of the chest
-    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 4, 12);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[5]);
 
     right_arm.add(mesh);
     
-    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 16, 4);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[5]);
     
     mesh.position.set(0, 6, -8);
     right_arm.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0xFF00FF, wireframe: false });
     geometry = new THREE.CylinderGeometry(1, 1, 8, 30);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
 
     mesh.position.set(-3, 13, -8);
     right_arm.add(mesh);
@@ -337,37 +324,32 @@ function createHead(){
     head_pivot = new THREE.Object3D(); 
     head_pivot.userData = { movingUp: 0, movingDown: 0, step: 0};
 
-    material = new THREE.MeshBasicMaterial ({color: 0x9B59B6, wireframe: false });
     geometry = new THREE.BoxGeometry(6, 6, 6);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[6]);
 
     mesh.position.set(0, 5, 0);
     head.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
     geometry = new THREE.BoxGeometry(1, 1, 1);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[5]);
 
     mesh.position.set(2, 5, 3);
     head.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0x000000, wireframe: false });
     geometry = new THREE.BoxGeometry(1, 1, 1);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[5]);
 
     mesh.position.set(-2, 5, 3);
     head.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0xFF00FF, wireframe: false });
     geometry = new THREE.CylinderGeometry(0.5, 0.5, 3, 30);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
 
     mesh.position.set(3.5, 8.5, 0);
     head.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0xFF00FF, wireframe: false });
     geometry = new THREE.CylinderGeometry(0.5, 0.5, 3, 30);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
 
     mesh.position.set(-3.5, 8.5, 0);
     head.add(mesh);
@@ -386,23 +368,21 @@ function createLeftLeg() {
     left_leg.userData = { movingUp: 0, movingDown: 0, step: 0 };
     
     var leg = new THREE.Object3D();
-    material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 18, 4)
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[7]);
     
     mesh.position.set(0,20, -1)
     leg.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
     geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
     mesh.position.set(3.51, 18, 1);
     leg.add(mesh);
 
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
@@ -417,9 +397,8 @@ function createLeftLeg() {
     left_foot = new THREE.Object3D(); 
     left_foot.userData = { movingUp: 0, movingDown: 0, step: 0 };
 
-    material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(5, 4, 8)
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[7]);
     mesh.position.set(0, 0, 1);
     var cube = new THREE.Object3D();
     cube.add(mesh);
@@ -440,23 +419,21 @@ function createRightLeg() {
     right_leg.userData = { movingUp: 0, movingDown: 0, step: 0 };
 
     var leg = new THREE.Object3D();
-    material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(4, 18, 4)
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[7]);
 
     mesh.position.set(0,20, -1)
     leg.add(mesh);
 
-    material = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false });
     geometry = new THREE.CylinderGeometry( 3, 3, 3, 64);
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
     mesh.position.set(-3.51, 18, 1);
     leg.add(mesh);
 
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[1]);
     mesh.rotation.x = Math.PI / 2;
     mesh.rotation.z = Math.PI / 2;
 
@@ -471,9 +448,8 @@ function createRightLeg() {
     right_foot = new THREE.Object3D(); 
     right_foot.userData = { movingUp: 0, movingDown: 0, step: 0 };     // tirado angle: 0 não estava a fazer nada
 
-    material = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false });
     geometry = new THREE.BoxGeometry(5, 4, 8)
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, components[7]);
     mesh.position.set(0, 0, 1);
     var cube = new THREE.Object3D();
     cube.add(mesh);
@@ -757,11 +733,10 @@ function onKeyDown(e) {
             }
             break;
         case 54: // 6
-            scene.traverse(function (node) {
-            if (node instanceof THREE.Mesh) {
-                node.material.wireframe = !node.material.wireframe;
+            for (let i = 0; i < components.length; i++) {
+                const scene_element = components[i];
+                scene_element.wireframe = !scene_element.wireframe;
             }
-        });
             break;
         case 65: // A
         case 97: // a
