@@ -204,6 +204,11 @@ function createTrailer() {
     mesh.position.set(-10, -19, -25);
     trailer.add(mesh);
 
+    mesh = new THREE.Mesh(geometry, components[8]);
+
+    mesh.position.set(0, -16.5, 27);
+    trailer.add(mesh);
+
     trailer.position.set(0,15,-60);
 
     trailer.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0, colisions: true};
