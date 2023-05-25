@@ -111,6 +111,7 @@ function createCamera3() {
     camera3.position.y = 100;
     camera3.position.z = 0;
     camera3.lookAt(scene.position);
+    camera3.rotateZ(Math.PI/2);
 }
 
 // Ortogonal
