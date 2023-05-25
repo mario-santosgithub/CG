@@ -111,7 +111,6 @@ function createCamera3() {
     camera3.position.y = 100;
     camera3.position.z = 0;
     camera3.lookAt(scene.position);
-    camera3.rotateZ(Math.PI/2);
 }
 
 // Ortogonal
@@ -149,11 +148,6 @@ function createCamera5() {
     camera5.lookAt(scene.position);
     camera5.rotateZ(Math.PI);    
 }
-
-
-/////////////////////
-/* CREATE LIGHT(S) */
-/////////////////////
 
 ////////////////////////
 /* CREATE OBJECT3D(S) */
@@ -203,11 +197,6 @@ function createTrailer() {
     mesh.rotation.z = Math.PI / 2;
     
     mesh.position.set(-10, -19, -25);
-    trailer.add(mesh);
-
-    mesh = new THREE.Mesh(geometry, components[8]);
-
-    mesh.position.set(0, -16.5, 27);
     trailer.add(mesh);
 
     trailer.position.set(0,15,-60);
@@ -481,11 +470,11 @@ function createRightLeg() {
 function checkCollisions(){
     'use strict';
 
-    minPointTrailer = new THREE.Vector3(trailer.position.x-10,trailer.position.y-15, trailer.position.z-30);
-    maxPointTrailer = new THREE.Vector3(trailer.position.x+10,trailer.position.y+15, trailer.position.z+30);
+    minPointTrailer = new THREE.Vector3(trailer.position.x-11,trailer.position.y-16, trailer.position.z-31);
+    maxPointTrailer = new THREE.Vector3(trailer.position.x+11,trailer.position.y+16, trailer.position.z+31);
 
-    minPointTruck = new THREE.Vector3(chest.position.x-8, chest.position.y-10, chest.position.z-28);
-    maxPointTruck = new THREE.Vector3(chest.position.x+8, chest.position.y+10, chest.position.z+8);
+    minPointTruck = new THREE.Vector3(chest.position.x-9, chest.position.y-11, chest.position.z-29);
+    maxPointTruck = new THREE.Vector3(chest.position.x+9, chest.position.y+11, chest.position.z+9);
 
     if (minPointTrailer.x <= maxPointTruck.x &&
         maxPointTrailer.x >= minPointTruck.x &&
@@ -513,8 +502,6 @@ function resetMovement(){
 ///////////////////////
 function handleCollisions(){
     'use strict';
-
-    // 10, 30, -8
 
     var expectedPosition = new THREE.Vector3(10, 30, -9);
     var mov_left = 0, mov_right = 0, mov_forward = 0, mov_back = 0;
@@ -604,15 +591,6 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
-
-    console.log("left")
-    console.log(trailer.userData.moving_left)
-    console.log("right")
-    console.log(trailer.userData.moving_right)
-    console.log("for")
-    console.log(trailer.userData.moving_forward)
-    console.log("back")
-    console.log(trailer.userData.moving_back)
 
     trailer_directions.x += 0.5 * ( trailer.userData.moving_left - trailer.userData.moving_right );
     trailer_directions.z += 0.5 * ( trailer.userData.moving_forward - trailer.userData.moving_back );
@@ -904,8 +882,6 @@ function onKeyUp(e){
                 left_arm.userData.moving_in = 0;
             }
             break;
-
-
     }
 
 }
