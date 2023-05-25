@@ -7,6 +7,7 @@ var material, geometry, mesh, wireFrameBool;
 var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head, head_pivot;
 var trailer, colisionTruck, colisionTrailer;
 var maxPointTrailer, minPointTrailer, maxPointTruck, minPointTruck;
+
 var components = [m1 = new THREE.MeshBasicMaterial ({color: 0x00ff21, wireframe: false }),
     m2 = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false }),
     m3 = new THREE.MeshBasicMaterial ({color: 0xfb3210, wireframe: false }),
@@ -16,7 +17,10 @@ var components = [m1 = new THREE.MeshBasicMaterial ({color: 0x00ff21, wireframe:
     m7 = new THREE.MeshBasicMaterial ({color: 0x9B59B6, wireframe: false }),
     m8 = new THREE.MeshBasicMaterial ({color: 0xaa00ff, wireframe: false }),
     m9 = new THREE.MeshBasicMaterial ({color: 0xffff21, wireframe: false })]; 
+
 var movements_allowed = true, animations_allowed = true, cameras_allowed = true, reboque_ligado = false;
+
+var trailer_directions = new THREE.Vector3(0,0,0);
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -595,9 +599,23 @@ function init() {
 function animate() {
     'use strict';
 
-    trailer.translateX(0.5 * ( trailer.userData.moving_left - trailer.userData.moving_right ));
+    console.log("left")
+    console.log(trailer.userData.moving_left)
+    console.log("right")
+    console.log(trailer.userData.moving_right)
+    console.log("for")
+    console.log(trailer.userData.moving_forward)
+    console.log("back")
+    console.log(trailer.userData.moving_back)
 
-    trailer.translateZ(0.5 * ( trailer.userData.moving_forward - trailer.userData.moving_back ));
+    trailer_directions.x += 0.5 * ( trailer.userData.moving_left - trailer.userData.moving_right );
+    trailer_directions.z += 0.5 * ( trailer.userData.moving_forward - trailer.userData.moving_back );
+
+    if(!trailer_directions.equals((0,0,0))){
+        trailer.position.add(trailer_directions);
+
+        trailer_directions.set(0,0,0);
+    }
 
     var movement_feet = 1 * (left_foot.userData.movingDown - left_foot.userData.movingUp);
     var feet_updated_step = left_foot.userData.step + movement_feet;
@@ -811,18 +829,18 @@ function onKeyUp(e){
             break;
         case 38:
             if(movements_allowed || reboque_ligado){
-                trailer.userData.moving_forward = 0
-            };
+                trailer.userData.moving_forward = 0;
+            }
             break;
         case 39:
             if(movements_allowed || reboque_ligado){
-                trailer.userData.moving_right = 0
-            };
+                trailer.userData.moving_right = 0;
+            }
             break;
         case 40:
             if(movements_allowed || reboque_ligado){
-                trailer.userData.moving_back = 0
-            };
+                trailer.userData.moving_back = 0;
+            }
             break;
         case 65: // A
         case 97: // a
