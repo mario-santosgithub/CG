@@ -528,16 +528,16 @@ function handleCollisions(delta){
     
     if(expectedPosition.x != maxPointTrailer.x || expectedPosition.z != maxPointTrailer.z){
         if (Math.abs(maxPointTrailer.x - expectedPosition.x) < 0.5) {
-            trailer.translateX(delta * 10 * Math.abs(maxPointTrailer.x - expectedPosition.x) * ( mov_left - mov_right ));
+            trailer.translateX(delta * 40 * Math.abs(maxPointTrailer.x - expectedPosition.x) * ( mov_left - mov_right ));
         }
         else{
-            trailer.translateX(delta * 5 * ( mov_left - mov_right ));
+            trailer.translateX(delta * 20 * ( mov_left - mov_right ));
         }
         if (Math.abs(maxPointTrailer.z - expectedPosition.z) < 0.5) {
-            trailer.translateZ(delta * 10 * Math.abs(maxPointTrailer.z - expectedPosition.z) * ( mov_forward - mov_back ));
+            trailer.translateZ(delta * 40 * Math.abs(maxPointTrailer.z - expectedPosition.z) * ( mov_forward - mov_back ));
         }
         else{
-            trailer.translateZ(delta * 5 * ( mov_forward - mov_back ));
+            trailer.translateZ(delta * 20 * ( mov_forward - mov_back ));
         }
     }
     else{
@@ -585,7 +585,6 @@ function init() {
 
     camera = camera4; // start with ortogonal
 
-    render();
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
@@ -608,7 +607,7 @@ function animate() {
         trailer_directions.set(0,0,0);
     }
 
-    var movement_feet = delta * 10 * (left_foot.userData.movingDown - left_foot.userData.movingUp);
+    var movement_feet = delta * 50 * (left_foot.userData.movingDown - left_foot.userData.movingUp);
     var feet_updated_step = left_foot.userData.step + movement_feet;
 
     if (feet_updated_step <= 30 && feet_updated_step >= 0) { 
@@ -619,7 +618,7 @@ function animate() {
         
     }
 
-    var movement_legs = delta * 10 * (left_leg.userData.movingUp - left_leg.userData.movingDown);
+    var movement_legs = delta * 50 * (left_leg.userData.movingUp - left_leg.userData.movingDown);
     var leg_updated_step = left_leg.userData.step + movement_legs;
 
     if (leg_updated_step <= 30 && leg_updated_step >= 0) { 
@@ -630,7 +629,7 @@ function animate() {
         
     }
 
-    var movement_head = delta * 10 * (head_pivot.userData.movingUp - head_pivot.userData.movingDown);
+    var movement_head = delta * 50 * (head_pivot.userData.movingUp - head_pivot.userData.movingDown);
     var head_updated_step = head_pivot.userData.step + movement_head;
 
     if (head_updated_step <= 40 && head_updated_step >= 0) { 
@@ -639,7 +638,7 @@ function animate() {
         head_pivot.rotation.x -= Math.PI/40 * movement_head;
     }
 
-    var movement_arms = delta * 2.5 * (left_arm.userData.moving_out - left_arm.userData.moving_in);
+    var movement_arms = delta * 10 * (left_arm.userData.moving_out - left_arm.userData.moving_in);
     var arm_updated_step = left_arm.userData.step +  movement_arms;
 
     if( arm_updated_step <= 4 && arm_updated_step >= 0 ){
@@ -648,8 +647,7 @@ function animate() {
         right_arm.translateX(-movement_arms);
     }
 
-    if (feet_updated_step == 30 && leg_updated_step == 30 && head_updated_step == 40 && arm_updated_step == 0) {
-
+    if ( feet_updated_step >= 29.9 && leg_updated_step >= 29.9 && head_updated_step >= 39.8 && arm_updated_step <= 0.1) {
         if (checkCollisions()) {
             if(!reboque_ligado){
                 resetMovement();
