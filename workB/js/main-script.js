@@ -7,6 +7,8 @@ var material, geometry, mesh, wireFrameBool;
 var right_arm, left_arm, chest, right_leg, right_foot, left_leg, left_foot, head, head_pivot;
 var trailer, colisionTruck, colisionTrailer;
 var maxPointTrailer, minPointTrailer, maxPointTruck, minPointTruck;
+var clock = new THREE.Clock();
+
 
 var components = [m1 = new THREE.MeshBasicMaterial ({color: 0x00ff21, wireframe: false }),
     m2 = new THREE.MeshBasicMaterial ({color: 0xff00ff, wireframe: false }),
@@ -30,7 +32,6 @@ function createScene() {
 
     scene = new THREE.Scene();
 
-    scene.add(new THREE.AxisHelper(20));
     scene.background = new THREE.Color( 0xE7DAF9 );
 
     createChest();
@@ -111,6 +112,7 @@ function createCamera3() {
     camera3.position.y = 100;
     camera3.position.z = 0;
     camera3.lookAt(scene.position);
+    camera3.rotateZ(Math.PI/2);
 }
 
 // Ortogonal
@@ -199,13 +201,16 @@ function createTrailer() {
     mesh.position.set(-10, -19, -25);
     trailer.add(mesh);
 
+    mesh = new THREE.Mesh(geometry, components[8]);
+
+    mesh.position.set(0, -16.5, 27);
+    trailer.add(mesh);
+
     trailer.position.set(0,15,-60);
 
     trailer.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0, colisions: true};
 
     scene.add(trailer);
-
-
 }
 
 function createChest() {
@@ -570,6 +575,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
     wireFrameBool = false;
     createScene();
+    clock.start();
 
     createCamera1();
     createCamera2();
@@ -592,8 +598,9 @@ function init() {
 function animate() {
     'use strict';
 
-    trailer_directions.x += 0.5 * ( trailer.userData.moving_left - trailer.userData.moving_right );
-    trailer_directions.z += 0.5 * ( trailer.userData.moving_forward - trailer.userData.moving_back );
+    const delta = clock.getDelta();
+    trailer_directions.x += delta * 20 * ( trailer.userData.moving_left - trailer.userData.moving_right );
+    trailer_directions.z += delta * 20 * ( trailer.userData.moving_forward - trailer.userData.moving_back );
 
     if(!trailer_directions.equals((0,0,0))){
         trailer.position.add(trailer_directions);
@@ -601,7 +608,7 @@ function animate() {
         trailer_directions.set(0,0,0);
     }
 
-    var movement_feet = 1 * (left_foot.userData.movingDown - left_foot.userData.movingUp);
+    var movement_feet = delta * 10 * (left_foot.userData.movingDown - left_foot.userData.movingUp);
     var feet_updated_step = left_foot.userData.step + movement_feet;
 
     if (feet_updated_step <= 30 && feet_updated_step >= 0) { 
@@ -612,7 +619,7 @@ function animate() {
         
     }
 
-    var movement_legs = 1 * (left_leg.userData.movingUp - left_leg.userData.movingDown);
+    var movement_legs = delta * 10 * (left_leg.userData.movingUp - left_leg.userData.movingDown);
     var leg_updated_step = left_leg.userData.step + movement_legs;
 
     if (leg_updated_step <= 30 && leg_updated_step >= 0) { 
@@ -623,7 +630,7 @@ function animate() {
         
     }
 
-    var movement_head = 1 * (head_pivot.userData.movingUp - head_pivot.userData.movingDown);
+    var movement_head = delta * 10 * (head_pivot.userData.movingUp - head_pivot.userData.movingDown);
     var head_updated_step = head_pivot.userData.step + movement_head;
 
     if (head_updated_step <= 40 && head_updated_step >= 0) { 
@@ -632,7 +639,7 @@ function animate() {
         head_pivot.rotation.x -= Math.PI/40 * movement_head;
     }
 
-    var movement_arms = 0.25 * (left_arm.userData.moving_out - left_arm.userData.moving_in);
+    var movement_arms = delta * 2.5 * (left_arm.userData.moving_out - left_arm.userData.moving_in);
     var arm_updated_step = left_arm.userData.step +  movement_arms;
 
     if( arm_updated_step <= 4 && arm_updated_step >= 0 ){
