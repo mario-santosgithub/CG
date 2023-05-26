@@ -505,7 +505,7 @@ function resetMovement(){
 ///////////////////////
 /* HANDLE COLLISIONS */
 ///////////////////////
-function handleCollisions(){
+function handleCollisions(delta){
     'use strict';
 
     var expectedPosition = new THREE.Vector3(10, 30, -9);
@@ -528,16 +528,16 @@ function handleCollisions(){
     
     if(expectedPosition.x != maxPointTrailer.x || expectedPosition.z != maxPointTrailer.z){
         if (Math.abs(maxPointTrailer.x - expectedPosition.x) < 0.5) {
-            trailer.translateX(Math.abs(maxPointTrailer.x - expectedPosition.x) * ( mov_left - mov_right ));
+            trailer.translateX(delta * 10 * Math.abs(maxPointTrailer.x - expectedPosition.x) * ( mov_left - mov_right ));
         }
         else{
-            trailer.translateX( 0.5 * ( mov_left - mov_right ));
+            trailer.translateX(delta * 5 * ( mov_left - mov_right ));
         }
         if (Math.abs(maxPointTrailer.z - expectedPosition.z) < 0.5) {
-            trailer.translateZ(Math.abs(maxPointTrailer.z - expectedPosition.z) * ( mov_forward - mov_back ));
+            trailer.translateZ(delta * 10 * Math.abs(maxPointTrailer.z - expectedPosition.z) * ( mov_forward - mov_back ));
         }
         else{
-            trailer.translateZ( 0.5 * ( mov_forward - mov_back ));
+            trailer.translateZ(delta * 5 * ( mov_forward - mov_back ));
         }
     }
     else{
@@ -656,7 +656,7 @@ function animate() {
                 movements_allowed = false;
                 animations_allowed = false;
                 cameras_allowed = false;
-                handleCollisions();
+                handleCollisions(delta);
             }
         }
         else{
