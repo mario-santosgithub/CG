@@ -646,8 +646,9 @@ function animate() {
         left_arm.translateX(movement_arms);
         right_arm.translateX(-movement_arms);
     }
+    
 
-    if ( feet_updated_step >= 29.9 && leg_updated_step >= 29.9 && head_updated_step >= 39.8 && arm_updated_step <= 0.1) {
+    if ( feet_updated_step >= 29.5 && leg_updated_step >= 29.5 && head_updated_step >= 39.5 && arm_updated_step <= 0.1) {
         if (checkCollisions()) {
             if(!reboque_ligado){
                 resetMovement();
