@@ -3,8 +3,9 @@
 //////////////////////
 var camera, camera1, camera2, camera3, camera4, camera5;
 var scene, renderer;
-var material, geometry, mesh, wireFrameBool;
+var material, geometry, mesh, ovni;
 var clock = new THREE.Clock();
+var ovni_directions = new THREE.Vector3(0,0,0);
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -13,6 +14,11 @@ function createScene() {
     'use strict';
 
     scene = new THREE.Scene();
+    scene.add(new THREE.AxesHelper(40));
+
+    scene.background = new THREE.Color( 0xE7DAF9 );
+
+    createOvni();
 
 
 }
@@ -80,7 +86,7 @@ function createCamera3() {
     );
 
     camera3.position.x = 0;
-    camera3.position.y = 100;
+    camera3.position.y = -100;
     camera3.position.z = 0;
     camera3.lookAt(scene.position);
     camera3.rotateZ(Math.PI/2);
@@ -129,11 +135,50 @@ function createCamera5() {
 function createOvni(){
     'use strict'
 
-    chest = new THREE.Object3D(); // abdomen of the chest
-    const geometry = new THREE.SphereGeometry( 15, 32, 16 ); 
-    const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } ); 
-    const mesh = new THREE.Mesh( geometry, material ); scene.add( sphere );
+    ovni = new THREE.Object3D(); 
+    geometry = new THREE.SphereGeometry( 10, 32, 30 );
+    material = new THREE.MeshBasicMaterial( { color: 0x34eb3a, wireframe: false } ); 
 
+    mesh = new THREE.Mesh( geometry, material );
+    mesh.scale.set(1,0.2,1);
+    ovni.add(mesh);
+
+    geometry = new THREE.SphereBufferGeometry(5, 30, 30, 0, 2*Math.PI, 0, 0.5 * Math.PI);
+    material = new THREE.MeshBasicMaterial( { color: 0x91a191, wireframe: false } );
+    mesh = new THREE.Mesh( geometry, material);
+
+    ovni.add(mesh);
+
+    const nLights = 8;
+
+    var i = 0;
+
+    while( i < nLights ){
+        var spherePos = new THREE.Object3D();
+
+        spherePos.rotation.y = i * (2 * Math.PI)/nLights
+
+        ovni.add(spherePos);
+
+        geometry = new THREE.SphereGeometry( 1, 32, 30 );
+        material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe: false } );
+        mesh = new THREE.Mesh( geometry, material );
+        mesh.position.set(6,-1, 0);
+        spherePos.add(mesh);
+        i++;
+    }
+
+    geometry = new THREE.CylinderGeometry( 3, 3, 1, 64);
+    material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, -2, 0);
+
+    ovni.add(mesh);
+
+    ovni.position.set(0,30,0);
+
+    ovni.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0, colisions: true};
+    scene.add(ovni);
 }
 
 ////////////
@@ -162,7 +207,6 @@ function init() {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-    wireFrameBool = false;
     createScene();
     clock.start();
 
@@ -186,6 +230,15 @@ function init() {
 function animate() {
     'use strict';
 
+    const delta = clock.getDelta();
+    ovni_directions.x += delta * 20 * ( ovni.userData.moving_left - ovni.userData.moving_right );
+    ovni_directions.z += delta * 20 * ( ovni.userData.moving_forward - ovni.userData.moving_back );
+
+    if(!ovni_directions.equals((0,0,0))){
+        ovni.position.add(ovni_directions);
+
+        ovni_directions.set(0,0,0);
+    }
     
     render();
     requestAnimationFrame(animate);
@@ -215,6 +268,33 @@ function onKeyDown(e) {
     'use strict';
 
     switch (e.keyCode) {
+    case 37:
+        ovni.userData.moving_left = 1;
+        break;
+    case 38:
+        ovni.userData.moving_forward = 1;
+        break;
+    case 39:
+        ovni.userData.moving_right = 1;
+        break;
+    case 40:
+        ovni.userData.moving_back = 1;
+        break;    
+    case 49: // 1
+        camera = camera1;
+        break;
+    case 50: // 2
+        camera = camera2;
+        break;
+    case 51: // 3
+        camera = camera3;
+        break;
+    case 52: // 4
+        camera = camera4;
+        break;
+    case 53: // 5
+        camera = camera5;
+        break;
         
     }       
 }
@@ -226,6 +306,18 @@ function onKeyUp(e){
     'use strict';
 
     switch(e.keyCode) {
+        case 37:
+        ovni.userData.moving_left = 0;
+        break;
+    case 38:
+        ovni.userData.moving_forward = 0;
+        break;
+    case 39:
+        ovni.userData.moving_right = 0;
+        break;
+    case 40:
+        ovni.userData.moving_back = 0;
+        break;    
         
     }
 
