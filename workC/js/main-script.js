@@ -1,7 +1,10 @@
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-
+var camera, camera1, camera2, camera3, camera4, camera5;
+var scene, renderer;
+var material, geometry, mesh, wireFrameBool;
+var clock = new THREE.Clock();
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -123,6 +126,15 @@ function createCamera5() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
+function createOvni(){
+    'use strict'
+
+    chest = new THREE.Object3D(); // abdomen of the chest
+    const geometry = new THREE.SphereGeometry( 15, 32, 16 ); 
+    const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } ); 
+    const mesh = new THREE.Mesh( geometry, material ); scene.add( sphere );
+
+}
 
 ////////////
 /* UPDATE */
