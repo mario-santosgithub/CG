@@ -1,11 +1,16 @@
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-var camera, camera1, camera2, camera3, camera4, camera5;
+var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, ovni, house;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
+var grass_scene, sky_scene;
+var textureBuffer;
+var renderer_sky, renderer_grass;
+
+var flower_color_array = ["ffffff", "ffff00", "c8a2c8", "add8e6"]
 
 var verticesH = new Float32Array([
                 
@@ -499,6 +504,7 @@ function createScene() {
 
     createOvni();
     createHouse();
+    createTerrain();
 
 
 }
@@ -525,7 +531,7 @@ function createCamera1() {
 
     camera1.position.x = 0;
     camera1.position.y = 0;
-    camera1.position.z = 100;
+    camera1.position.z = 800;
     camera1.lookAt(scene.position);
 }
 
@@ -544,7 +550,7 @@ function createCamera2() {
         1000
     );
 
-    camera2.position.x = 100;
+    camera2.position.x = 800;
     camera2.position.y = 0;
     camera2.position.z = 0;
     camera2.lookAt(scene.position);
@@ -566,7 +572,7 @@ function createCamera3() {
     );
 
     camera3.position.x = 0;
-    camera3.position.y = -100;
+    camera3.position.y = -800;
     camera3.position.z = 0;
     camera3.lookAt(scene.position);
     camera3.rotateZ(Math.PI/2);
@@ -577,7 +583,7 @@ function createCamera4() {
     'use strict';
 
     const aspectRatio = window.innerWidth / window.innerHeight;
-    const frustumSize = 100;
+    const frustumSize = 300;
 
     camera4 = new THREE.OrthographicCamera(
         frustumSize * aspectRatio / -2,
@@ -585,12 +591,12 @@ function createCamera4() {
         frustumSize / 2,
         frustumSize / -2,
         1,
-        1000
+        2000
     );
 
-    camera4.position.x = 100;
-    camera4.position.y = 100;
-    camera4.position.z = 100;
+    camera4.position.x = 600;
+    camera4.position.y = 600;
+    camera4.position.z = 600;
     camera4.lookAt(scene.position);
 }
 
@@ -601,9 +607,9 @@ function createCamera5() {
                                          window.innerWidth / window.innerHeight,
                                          1,
                                          1000);
-    camera5.position.x = 80;
-    camera5.position.y = 80;
-    camera5.position.z = 80;
+    camera5.position.x = 200;
+    camera5.position.y = 200;
+    camera5.position.z = 200;
     camera5.lookAt(scene.position);
     camera5.rotateZ(Math.PI);    
 }
@@ -705,6 +711,123 @@ function createHouse() {
     scene.add(house);
 }
 
+function createTerrain(){
+    const heightMapTexture = new THREE.TextureLoader().load("../workC/heightmap.png");
+
+    const geometry = new THREE.PlaneGeometry(400, 400, 99, 99);
+
+    geometry.rotateX(-Math.PI / 2);
+
+
+    const material = new THREE.MeshPhongMaterial({
+        displacementMap: heightMapTexture,
+        displacementScale: 50,
+        color: 0x00ff00,
+        wireframe: true
+    });
+
+   const mesh = new THREE.Mesh(geometry, material);
+   scene.add(mesh);
+}
+
+function createGrassField(){
+    grass_scene = new THREE.Scene();
+    grass_scene.background = new THREE.Color(0x90EE90);
+
+    var geometry = new THREE.SphereGeometry(2, 32, 16);
+
+    for (var i = 0; i < 300; i += 1) {
+
+        colour = new THREE.Color();
+        colour.setHex(`0x${flower_color_array[Math.floor(Math.random() * flower_color_array.length)]}`);
+
+        material = new THREE.MeshBasicMaterial({ color: colour });
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = (Math.random()) * 396 - 198;
+        mesh.position.y = (Math.random()) * 396 - 198;
+        mesh.position.z = 0;
+
+        grass_scene.add(mesh);
+    }
+
+    const frustumSize = 401;
+
+    cameraGrass = new THREE.OrthographicCamera(
+        frustumSize / -2,
+        frustumSize / 2,
+        frustumSize / 2,
+        frustumSize / -2,
+        1,
+        1000
+    );
+
+    cameraGrass.position.x = 0;
+    cameraGrass.position.y = 0;
+    cameraGrass.position.z = 200;
+
+    cameraGrass.lookAt(grass_scene.position);
+
+}
+
+
+function createNightSky(){
+    sky_scene = new THREE.Scene();
+    sky_scene.background = new THREE.Color(0x00008B);
+
+    var geometry = new THREE.SphereGeometry(2, 32, 16);
+
+    for (var i = 0; i < 300; i += 1) {
+
+        colour = new THREE.Color();
+        colour.setHex(0xffffff);
+
+        material = new THREE.MeshBasicMaterial({ color: colour });
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = (Math.random()) * 396 - 198;
+        mesh.position.y = (Math.random()) * 396 - 198;
+        mesh.position.z = 0;
+
+        sky_scene.add(mesh);
+    }
+    const frustumSize = 401;
+
+    cameraSky = new THREE.OrthographicCamera(
+        frustumSize / -2,
+        frustumSize / 2,
+        frustumSize / 2,
+        frustumSize / -2,
+        1,
+        1000
+    );
+
+    cameraSky.position.x = 0;
+    cameraSky.position.y = 0;
+    cameraSky.position.z = 200;
+
+    cameraSky.lookAt(sky_scene.position);
+
+}
+
+
+function createGrassTexture(){
+    grass_scene = new THREE.Scene();
+
+    textureBuffer = new THREE.WebGLRenderTarget(400, 400, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter});
+
+    createGrassField();
+
+    renderer = new THREE.WebGLRenderer({
+        antialias: true
+    });
+
+    renderer.setSize(400,400);
+    renderer.setRenderTarget(textureBuffer);
+    renderer.render(grass_scene, cameraGrass);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setRenderTarget(null);
+
+    
+}
 
 
 ////////////
@@ -759,7 +882,6 @@ function init() {
     createCamera5();
 
     camera = camera4; // start with ortogonal
-
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
