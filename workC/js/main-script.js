@@ -3,9 +3,488 @@
 //////////////////////
 var camera, camera1, camera2, camera3, camera4, camera5;
 var scene, renderer;
-var material, geometry, mesh, ovni;
+var material, geometry, mesh, ovni, house;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
+
+var verticesH = new Float32Array([
+                
+    // Triangle 1 
+    0, 0, 0,             // Vertex 1
+    3, 0, 0,             // Vertex 2
+    3, 24, 0,            // Vertex 3
+
+    // Triangle 2
+    3, 24, 0,            // Vertex 1
+    0, 24, 0,            // Vertex 2
+    0, 0, 0,             // Vertex 3
+
+    // Triangle 3
+    3, 0, 0,             // Vertex 1
+    24, 0, 0,            // Vertex 2
+    24, 15, 0,           // Vertex 3
+
+    // Triangle 4
+    3, 15, 0,            // Vertex 1
+    3, 0, 0,             // Vertex 2
+    24, 15, 0,           // Vertex 3
+
+    // Triangle 5
+    3, 15, 0,            // Vertex 1
+    6, 15, 0,            // Vertex 2
+    3, 21, 0,            // Vertex 3
+
+    // Triangle 6
+    6, 21, 0,            // Vertex 1
+    3, 21, 0,            // Vertex 2
+    6, 15, 0,            // Vertex 3
+
+    // Triangle 7
+    12, 15, 0,            // Vertex 1
+    15, 15, 0,            // Vertex 2
+    12, 21, 0,            // Vertex 3
+
+    // Triangle 8
+    15, 15, 0,            // Vertex 1
+    15, 21, 0,            // Vertex 2
+    12, 21, 0,            // Vertex 3
+
+    // Triangle 9
+    21, 21, 0,            // Vertex 1
+    21, 15, 0,            // Vertex 2
+    24, 15, 0,            // Vertex 3
+
+    // Triangle 10
+    24, 15, 0,            // Vertex 1
+    24, 21, 0,            // Vertex 2
+    21, 21, 0,            // Vertex 3
+
+    // Triangle 11
+    3, 27, 0,            // Vertex 1
+    3, 21, 0,            // Vertex 2
+    84, 21, 0,            // Vertex 3
+
+    // Triangle 12
+    3, 27, 0,            // Vertex 1
+    84, 21, 0,            // Vertex 2
+    84, 27, 0,            // Vertex 3
+
+    // Triangle 13
+    0, 27, 0,            // Vertex 1
+    0, 24, 0,            // Vertex 2
+    3, 27, 0,            // Vertex 3
+
+    // Triangle 14
+    3, 27, 0,            // Vertex 1
+    0, 24, 0,            // Vertex 2
+    3, 24, 0,            // Vertex 3
+    
+    // Triangle 15
+    42, 24, 0,            // Vertex 1
+    33, 24, 0,            // Vertex 2
+    33, 0, 0,            // Vertex 3
+
+    // Triangle 16
+    42, 24, 0,            // Vertex 1
+    33, 0, 0,            // Vertex 2
+    42, 0, 0,            // Vertex 3
+
+    // Triangle 17
+    42, 15, 0,            // Vertex 1
+    42, 0, 0,            // Vertex 2
+    84, 0, 0,            // Vertex 3
+
+    // Triangle 18
+    84, 0, 0,            // Vertex 1
+    84, 15, 0,            // Vertex 2
+    42, 15, 0,            // Vertex 3
+
+    // Triangle 19
+    48, 21, 0,            // Vertex 1
+    48, 15, 0,            // Vertex 2
+    72, 21, 0,            // Vertex 3
+
+    // Triangle 20
+    72, 15, 0,            // Vertex 1
+    72, 21, 0,            // Vertex 2
+    48, 15, 0,            // Vertex 3
+
+    // Triangle 21
+    78, 21, 0,            // Vertex 1
+    78, 15, 0,            // Vertex 2
+    84, 21, 0,            // Vertex 3
+
+    // Triangle 22
+    84, 15, 0,            // Vertex 1
+    84, 21, 0,            // Vertex 2
+    78, 15, 0,            // Vertex 3
+
+    // Triangle 26
+    84, 15, -36,            // Vertex 1
+    84, 0, 0,            // Vertex 2
+    84, 0, -36,            // Vertex 3
+
+    // Triangle 27
+    84, 15, 0,            // Vertex 1
+    84, 0, 0,            // Vertex 2
+    84, 15, -36,            // Vertex 3
+
+    // Triangle 28
+    84, 15, 0,            // Vertex 1
+    84, 21, -27,            // Vertex 2
+    84, 21, 0,            // Vertex 3
+
+    // Triangle 29
+    84, 15, -27,            // Vertex 1
+    84, 21, -27,            // Vertex 2
+    84, 15, 0,            // Vertex 3
+
+    // Triangle 30
+    84, 27, 0,             // Vertex 1
+    84, 21, 0,            // Vertex 2
+    84, 21, -36,           // Vertex 3
+    
+    // Triangle 31
+    84, 21, -36,            // Vertex 1
+    84, 27, -36,            // Vertex 2
+    84, 27, 0,            // Vertex 3
+
+    // Triangle 32
+    84, 15, -33,            // Vertex 1
+    84, 21, -36,            // Vertex 2
+    84, 21, -33,            // Vertex 3
+
+    // Triangle 33
+    84, 15, -33,            // Vertex 1
+    84, 15, -36,            // Vertex 2
+    84, 21, -36,            // Vertex 3
+
+    // Triangle 34
+    69, 0, -36,             // Vertex 2  /* RESOLVIDO ATE AQUI */
+    84, 15, -36,             // Vertex 1
+    84, 0, -36,            // Vertex 3
+
+    // Triangle 35
+    69, 15, -36,            // Vertex 2
+    84, 15, -36,            // Vertex 1
+    69, 0, -36,             // Vertex 3
+
+    // Triangle 36
+    84, 21, -36,            // Vertex 2
+    84, 15, -36,             // Vertex 1
+    81, 15, -36,           // Vertex 3
+
+    // Triangle 37
+    81, 21, -36,             // Vertex 2
+    84, 21, -36,            // Vertex 1
+    81, 15, -36,           // Vertex 3
+
+    // Triangle 38
+    84, 27, -36,            // Vertex 2
+    84, 21, -36,            // Vertex 1
+    0, 21, -36,            // Vertex 3
+
+    // Triangle 39
+    0, 27, -36,            // Vertex 2
+    84, 27, -36,            // Vertex 1
+    0, 21, -36,            // Vertex 3
+
+    // Triangle 40
+    75, 21, -36,            // Vertex 2
+    75, 15, -36,            // Vertex 1
+    69, 21, -36,            // Vertex 3
+
+    // Triangle 41
+    69, 21, -36,            // Vertex 2    
+    75, 15, -36,            // Vertex 1
+    69, 15, -36,            // Vertex 3
+
+    // Triangle 42
+    60, 15, -36,            // Vertex 2
+    60, 0, -36,            // Vertex 1
+    0, 15, -36,            // Vertex 3
+
+    // Triangle 43
+    0, 15, -36,            // Vertex 2
+    60, 0, -36,            // Vertex 1
+    0, 0, -36,            // Vertex 3
+    
+    // Triangle 44
+    60, 21, -36,            // Vertex 2
+    60, 15, -36,            // Vertex 1
+    51, 15, -36,            // Vertex 3
+
+    // Triangle 45
+    51, 21, -36,            // Vertex 2
+    60, 21, -36,            // Vertex 1
+    51, 15, -36,            // Vertex 3
+
+    // Triangle 46
+    45, 21, -36,            // Vertex 2
+    45, 15, -36,            // Vertex 1
+    0, 15, -36,            // Vertex 3
+
+    // Triangle 47
+    0, 21, -36,            // Vertex 2
+    45, 21, -36,            // Vertex 1
+    0, 15, -36,            // Vertex 3
+
+    // Triangle 48
+    0, 15, -36,            // Vertex 2
+    0, 0, -36,            // Vertex 1
+    0, 0, 0,            // Vertex 3
+
+    // Triangle 49
+    0, 15, 0,            // Vertex 2
+    0, 15, -36,            // Vertex 1
+    0, 0, 0,            // Vertex 3
+
+    // Triangle 50
+    0, 21, -36,            // Vertex 2
+    0, 15, -36,            // Vertex 1
+    0, 15, -33,            // Vertex 3
+    
+    // Triangle 51
+    0, 21, -33,            // Vertex 2
+    0, 21, -36,            // Vertex 1
+    0, 15, -33,            // Vertex 3
+
+    // Triangle 52
+    0, 21, -27,            // Vertex 2
+    0, 15, -27,            // Vertex 1
+    0, 15, 0,            // Vertex 3
+
+    // Triangle 53
+    0, 21, 0,            // Vertex 2
+    0, 21, -27,            // Vertex 1
+    0, 15, 0,            // Vertex 3
+    
+    // Triangle 54
+    0, 27, -36,            // Vertex 2
+    0, 21, -36,            // Vertex 1
+    0, 21, 0,            // Vertex 3
+
+    // Triangle 55
+    0, 27, 0,            // Vertex 2
+    0, 27, -36,            // Vertex 1
+    0, 21, 0,            // Vertex 3
+
+    // Triangle 56
+    0, 39, -18,            // Vertex 2
+    0, 27, -36,            // Vertex 1
+    0, 27, -18,            // Vertex 3
+
+    // Triangle 57
+    0, 39, -18,            // Vertex 2
+    0, 27, -18,            // Vertex 1
+    0, 27, 0,              // Vertex 3
+
+    // Triangle 58
+    84, 27, -36,           // Vertex 1
+    84, 39, -18,           // Vertex 2
+    84, 27, -18,           // Vertex 3
+
+    // Triangle 59
+    84, 27, -18,           // Vertex 1
+    84, 39, -18,           // Vertex 2
+    84, 27, 0,             // Vertex 3
+
+
+    
+    
+]);
+
+var indicesH = new Uint16Array([
+   0, 1, 2,             // Triangle 1
+   3, 4, 5,             // Triangle 2
+   6, 7, 8,             // Triangle 3
+   9, 10, 11,           // Triangle 4
+   12, 13, 14,          // Triangle 5
+   15, 16, 17,          // Triangle 6
+   18, 19, 20,          // Triangle 7
+   21, 22, 23,          // Triangle 8
+   24, 25, 27,          // Triangle 9
+   27, 28, 29,          // Triangle 10
+   30, 31, 32,          // Triangle 11
+   33, 34, 35,          // Triangle 12
+   36, 37, 38,          // Triangle 13
+   39, 40, 41,          // Triangle 14
+   42, 43, 44,          // Triangle 15
+   45, 46, 47,          // Triangle 16
+   48, 49, 50,          // Triangle 17
+   51, 52, 53,          // Triangle 18
+   54, 55, 56,          // Triangle 19
+   57, 58, 59,          // Triangle 20
+   60, 61, 62,          // Triangle 21
+   63, 64, 65,          // Triangle 22
+   66, 67, 68,          // Triangle 26
+   69, 70, 71,          // Triangle 27
+   72, 73, 74,          // Triangle 28
+   75, 76, 77,          // Triangle 29
+   78, 79, 80,          // Triangle 30
+   81, 82, 83,          // Triangle 31
+   84, 85, 86,          // Triangle 32
+   87, 88, 89,          // Triangle 33
+   90, 91, 92,          // Triangle 34
+   93, 94, 95,          // Triangle 35
+   96, 97, 98,          // Triangle 36
+   99, 100, 101,        // Triangle 37
+   102, 103, 104,       // Triangle 38 
+   105, 106, 107,       // Triangle 39
+   108, 109, 110,       // Triangle 40
+   111, 112, 113,       // Triangle 41
+   114, 115, 116,       // Triangle 42
+   117, 118, 119,       // Triangle 43
+   120, 121, 122,       // Triangle 44
+   123, 124, 125,       // Triangle 45
+   126, 127, 128,       // Triangle 46
+   129, 130, 131,       // Triangle 47
+   132, 133, 134,       // Triangle 48
+   135, 136, 137,       // Triangle 49 
+   138, 139, 140,       // Triangle 50
+   141, 142, 143,       // Triangle 51
+   144, 145, 146,       // Triangle 52
+   147, 148, 149,       // Triangle 53
+   150, 151, 152,       // Triangle 54
+   153, 154, 155,       // Triangle 55
+   156, 157, 158,       // Triangle 56
+   159, 160, 161,       // Triangle 57
+   162, 163, 164,       // Triangle 58
+   165, 166, 167,       // Triangle 59
+]);
+
+var verticesW = new Float32Array([
+        // Square 1
+        6, 15, 0, // Vertex 1
+        12, 15, 0,  // Vertex 2
+        12, 21, 0,   // Vertex 3
+        6, 21, 0,   // Vertex 4
+
+        // Square 2
+        15, 15, 0, // Vertex 1
+        21, 15, 0,  // Vertex 2
+        21, 21, 0,   // Vertex 3
+        15, 21, 0,   // Vertex 4
+
+        // Square 3
+        42, 15, 0, // Vertex 1
+        48, 15, 0,  // Vertex 2
+        48, 21, 0,   // Vertex 3
+        42, 21, 0,   // Vertex 4
+        
+        
+        // Square 4
+        72, 15, 0, // Vertex 1
+        78, 15, 0,  // Vertex 2
+        78, 21, 0,   // Vertex 3
+        72, 21, 0,   // Vertex 4
+
+        // Square 5
+        84, 15, -27, // Vertex 1
+        84, 15, -33,  // Vertex 2
+        84, 21, -33,   // Vertex 3
+        84, 21, -27,   // Vertex 4
+
+        // Square 6
+        81, 15, -36,  // Vertex 2
+        75, 15, -36, // Vertex 1
+        75, 21, -36,   // Vertex 4
+        81, 21, -36,   // Vertex 3
+
+        // Square 7
+        51, 15, -36,  // Vertex 2
+        45, 15, -36, // Vertex 1
+        45, 21, -36,   // Vertex 4
+        51, 21, -36,   // Vertex 3
+
+        // Square 8
+        0, 15, -33,  // Vertex 2
+        0, 15, -27, // Vertex 1
+        0, 21, -27,   // Vertex 4
+        0, 21, -33,   // Vertex 3
+        
+        
+                    
+    ]);
+
+var indicesW = new Uint16Array([
+        0, 1, 2,             // Square 1
+        0, 2, 3,
+
+        4, 5, 6,             // Square 2
+        4, 6, 7,
+
+        8, 9, 10,             // Square 3
+        8, 10, 11,
+
+        12, 13, 14,             // Square 4
+        12, 14, 15,
+
+        16, 17, 18,             // Square 5
+        16, 18, 19,
+
+        20, 21, 22,             // Square 6
+        20, 22, 23,
+
+        24, 25, 26,             // Square 7
+        24, 26, 27,
+
+        28, 29, 30,             // Square 8
+        28, 30, 31,
+    ]);
+
+var verticesD = new Float32Array([
+        // Square 1
+        69, 0, -36,  // Vertex 2
+        60, 0, -36, // Vertex 1
+        60, 21, -36,   // Vertex 4
+        69, 21, -36,   // Vertex 3
+
+        // Square 2
+        24, 0, 0, // Vertex 1
+        33, 0, 0,  // Vertex 2
+        33, 21, 0,   // Vertex 3
+        24, 21, 0,   // Vertex 4
+    ]);
+
+var indicesD = new Uint16Array([
+        0, 1, 2,             // Square 1
+        0, 2, 3,
+
+        4, 5, 6,             // Square 2
+        4, 6, 7,
+
+    ]);
+
+var verticesT = new Float32Array([
+        // Triangle 60
+    0, 39, -18,            // Vertex 1
+    0, 27, 0,              // Vertex 2
+    84, 27, 0,             // Vertex 3
+
+    // Triangle 61
+    84, 39, -18,           // Vertex 1
+    0, 39, -18,            // Vertex 2
+    84, 27, 0,             // Vertex 3
+
+    // Triangle 62
+    0, 27, -36,              // Vertex 2
+    0, 39, -18,            // Vertex 1
+    84, 27, -36,             // Vertex 3
+
+    // Triangle 63
+    0, 39, -18,            // Vertex 2
+    84, 39, -18,           // Vertex 1
+    84, 27, -36,           // Vertex 3
+]);
+
+var indicesT = new Uint16Array([
+    0, 1, 2,             // Triangle 1
+    3, 4, 5,             // Triangle 2
+    6, 7, 8,             // Triangle 3
+    9, 10, 11,           // Triangle 4
+    ]);
+
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -19,6 +498,7 @@ function createScene() {
     scene.background = new THREE.Color( 0xE7DAF9 );
 
     createOvni();
+    createHouse();
 
 
 }
@@ -180,6 +660,52 @@ function createOvni(){
     ovni.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0, colisions: true};
     scene.add(ovni);
 }
+
+function createHouse() {
+    'use strict';
+
+    house = new THREE.Object3D();
+    geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(verticesH, 3));
+    geometry.setIndex(new THREE.BufferAttribute(indicesH, 1));
+
+
+    material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    var triangle = new THREE.Mesh(geometry, material);
+
+    geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(verticesW, 3));
+    geometry.setIndex(new THREE.BufferAttribute(indicesW, 1));
+
+    material = new THREE.MeshBasicMaterial({ color: 0x0099cc });
+    var windows = new THREE.Mesh(geometry, material);
+
+    geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(verticesD, 3));
+    geometry.setIndex(new THREE.BufferAttribute(indicesD, 1));
+
+    material = new THREE.MeshBasicMaterial({ color: 0x0099cc });
+    var doors = new THREE.Mesh(geometry, material);
+
+    geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(verticesT, 3));
+    geometry.setIndex(new THREE.BufferAttribute(indicesT, 1));
+
+    material = new THREE.MeshBasicMaterial({ color: 0xaa6500 });
+    var roof = new THREE.Mesh(geometry, material);
+
+
+
+    house.add(triangle);
+    house.add(windows);
+    house.add(doors);
+    house.add(roof);
+
+    house.position.set(-50,0,80);
+    scene.add(house);
+}
+
+
 
 ////////////
 /* UPDATE */
