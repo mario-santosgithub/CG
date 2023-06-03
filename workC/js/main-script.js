@@ -186,6 +186,22 @@ function createOvni(){
 ////////////
 function update(){
     'use strict';
+    const delta = clock.getDelta();
+    const movement_speed = delta * 30;
+    ovni_directions.x += (ovni.userData.moving_left - ovni.userData.moving_right);
+    ovni_directions.z += (ovni.userData.moving_forward - ovni.userData.moving_back);
+
+    if (!ovni_directions.equals(0, 0, 0)) {
+    ovni_directions.normalize();
+
+    ovni_directions.multiplyScalar(movement_speed);
+
+    ovni.position.add(ovni_directions);
+    ovni_directions.set(0, 0, 0);
+    }
+
+
+    ovni.rotation.y += 2 * delta;
 
 }
 
@@ -230,16 +246,7 @@ function init() {
 function animate() {
     'use strict';
 
-    const delta = clock.getDelta();
-    ovni_directions.x += delta * 20 * ( ovni.userData.moving_left - ovni.userData.moving_right );
-    ovni_directions.z += delta * 20 * ( ovni.userData.moving_forward - ovni.userData.moving_back );
-
-    if(!ovni_directions.equals((0,0,0))){
-        ovni.position.add(ovni_directions);
-
-        ovni_directions.set(0,0,0);
-    }
-    
+    update();
     render();
     requestAnimationFrame(animate);
 
