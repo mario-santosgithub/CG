@@ -4,6 +4,7 @@
 var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, house, moon, terrain, skyDome, tree;
+var toon, phong, lambert;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
@@ -971,6 +972,71 @@ function update(){
 
 }
 
+function changeToPhong() {
+
+    for (let i=0; i<geometries.length; i++) {
+   
+        if (geometries[i] instanceof THREE.Object3D) {
+            const meshes = geometries[i].children.filter(child => child instanceof THREE.Mesh);
+            
+            for(let j=0; j < meshes.length; j++) {
+                const mesh = meshes[j];
+                const oldMaterial = mesh.material;
+                const newMaterial = new THREE.MeshPhongMaterial({ color: oldMaterial.color });
+
+                newMaterial.map = oldMaterial.map;
+                newMaterial.normalMap = oldMaterial.normalMap;
+
+                mesh.material = newMaterial;
+            }
+        }
+    }
+    phong = false;
+
+}
+
+function changeToLambert() {
+    for (let i=0; i<geometries.length; i++) {
+
+        if (geometries[i] instanceof THREE.Object3D) {
+            const meshes = geometries[i].children.filter(child => child instanceof THREE.Mesh);
+            
+            for(let j=0; j < meshes.length; j++) {
+                const mesh = meshes[j];
+                const oldMaterial = mesh.material;
+                const newMaterial = new THREE.MeshLambertMaterial({ color: oldMaterial.color });
+
+                newMaterial.map = oldMaterial.map;
+                newMaterial.normalMap = oldMaterial.normalMap;
+
+                mesh.material = newMaterial;
+            }
+        }
+    }
+    lambert = false;
+}
+
+function changeToToon() {
+    for (let i=0; i<geometries.length; i++) {
+
+        if (geometries[i] instanceof THREE.Object3D) {
+            const meshes = geometries[i].children.filter(child => child instanceof THREE.Mesh);
+            
+            for(let j=0; j < meshes.length; j++) {
+                const mesh = meshes[j];
+                const oldMaterial = mesh.material;
+                const newMaterial = new THREE.MeshToonMaterial({ color: oldMaterial.color });
+
+                newMaterial.map = oldMaterial.map;
+                newMaterial.normalMap = oldMaterial.normalMap;
+
+                mesh.material = newMaterial;
+            }
+        }
+    }
+    toon = false;
+}
+
 /////////////
 /* DISPLAY */
 /////////////
@@ -1014,6 +1080,16 @@ function animate() {
     update();
     render();
     requestAnimationFrame(animate);
+
+    if (lambert) {
+        changeToLambert();
+    } 
+    else if (phong) {
+        changeToPhong();
+    }
+    else if (toon) {
+        changeToToon();
+    }
 
 }
 
@@ -1069,23 +1145,19 @@ function onKeyDown(e) {
         break;
     case 81: // Q
     case 113: // q
-        for (let i=0; i<geometries.length; i++) {
-            console.log(geometries.children);
-            if (geometries[i] instanceof THREE.Object3D) {
-                const meshes = geometries[i].children.filter(child => child instanceof THREE.Mesh);
-                console.log("here2");
-                for(let j=0; j < meshes.length; j++) {
-                    const mesh = meshes[j];
-                    const oldMaterial = mesh.material;
-                    const newMaterial = new THREE.MeshPhongMaterial({ color: oldMaterial.color });
+        lambert = true; 
+        break;
+    case 87: // W
+    case 119: // w
+        phong = true;
+
+        break;
+    case 69: // E
+    case 101: // e
+        toon = true
+ 
+        break;
     
-                    newMaterial.map = oldMaterial.map;
-                    newMaterial.normalMap = oldMaterial.normalMap;
-    
-                    mesh.material = newMaterial;
-                }
-            }
-        }
         
     }       
 }
