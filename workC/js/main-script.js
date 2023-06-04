@@ -3,7 +3,7 @@
 //////////////////////
 var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
-var material, geometry, mesh, house, moon, terrain, skyDome, tree;
+var material, geometry, mesh, terrain, skyDome, tree;
 var toon, phong, lambert;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
@@ -510,10 +510,20 @@ function createScene() {
     createTerrain();
 
     createLights();
+    createLights();
     createTreeModel1(0, 0, 0, 0);  
     createTreeModel1(90, 0, 70, Math.PI / 4); 
-    createTreeModel1(-90, 0, -90, -Math.PI / 2);
+    createTreeModel1(-90, -5, -90, -Math.PI / 2);
     createTreeModel1(-100,0, 90, -Math.PI / 8);
+    createTreeModel2(0, -5, 140, 0);
+    createTreeModel2(180, -5, -70, 0);
+    createTreeModel2(-140, 0, 0, 0);
+    createTreeModel2(0, -5, -140, Math.PI / 4);
+    createTreeModel3(190, -5, 20, 0);
+    createTreeModel3(-190, -5, 190, 0);
+    createTreeModel3(130, -5, 170, 0);
+    createTreeModel3(-150, -10, -150, 0);
+    
 
 }
 
@@ -528,6 +538,7 @@ function createLights() {
     var lightTarget = new THREE.Object3D();
     lightTarget.position.set(-1, -1, -1);
     light.target = lightTarget;
+    
     scene.add(light);
     scene.add(lightTarget);
 
@@ -646,14 +657,14 @@ function createOvni(){
     'use strict'
 
     geometry = new THREE.SphereGeometry( 20, 32, 30 );
-    material = new THREE.MeshBasicMaterial( { color: 0x34eb3a, wireframe: false } ); 
+    material = new THREE.MeshStandardMaterial( { color: 0x34eb3a, wireframe: false } ); 
 
     mesh = new THREE.Mesh( geometry, material );
     mesh.scale.set(1,0.2,1);
     geometries[0].add(mesh);
 
     geometry = new THREE.SphereBufferGeometry(10, 30, 30, 0, 2*Math.PI, 0, 0.5 * Math.PI);
-    material = new THREE.MeshBasicMaterial( { color: 0x91a191, wireframe: false } );
+    material = new THREE.MeshStandardMaterial( { color: 0x91a191, wireframe: false } );
     mesh = new THREE.Mesh( geometry, material);
 
     geometries[0].add(mesh);
@@ -669,7 +680,7 @@ function createOvni(){
         geometries[0].add(spherePos);
 
         geometry = new THREE.SphereGeometry( 2, 32, 30 );
-        material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe: false } );
+        material = new THREE.MeshStandardMaterial( { color: 0xFFFFFF, wireframe: false } );
         mesh = new THREE.Mesh( geometry, material );
         mesh.position.set(12,-2, 0);
         spherePos.add(mesh);
@@ -690,7 +701,7 @@ function createOvni(){
     }
 
     geometry = new THREE.CylinderGeometry( 6, 6, 1, 64);
-    material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
+    material = new THREE.MeshStandardMaterial( { color: 0x000000, wireframe: false } );
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, -4, 0);
 
@@ -706,7 +717,7 @@ function createMoon() {
     'use strict';
 
     geometry = new THREE.SphereGeometry( 15, 32, 30 );
-    material = new THREE.MeshBasicMaterial( { color: 0xF6F1D5, wireframe: false } ); 
+    material = new THREE.MeshStandardMaterial( { color: 0xF6F1D5, wireframe: false } ); 
 
     mesh = new THREE.Mesh( geometry, material );
     geometries[2].add(mesh);
@@ -751,7 +762,7 @@ function createHouse() {
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
-    geometries[1].position.set(70,13,-140);
+    geometries[1].position.set(70,13,-150);
     scene.add(geometries[1]);
 }
 
@@ -894,14 +905,14 @@ function createTreeModel1(x, y, z, rotation) {
     tree = new THREE.Object3D();
 
     geometry = new THREE.CylinderGeometry(3, 3, 30, 50);
-    material = new THREE.MeshBasicMaterial({ color: 0xa45729, wireframe: false });
+    material = new THREE.MeshStandardMaterial({ color: 0xa45729, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 30, 0);
 
     tree.add(mesh);
 
     geometry = new THREE.CylinderGeometry(2, 2, 20, 50);
-    material = new THREE.MeshBasicMaterial({ color: 0x933f28, wireframe: false });
+    material = new THREE.MeshStandardMaterial({ color: 0x933f28, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 45, 5);
 
@@ -919,7 +930,7 @@ function createTreeModel1(x, y, z, rotation) {
     geometry = new THREE.SphereGeometry(15, 32, 32);
     geometry.scale(1, 0.5, 1);
 
-    material = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 55, 10);
     tree.add(mesh);
@@ -927,7 +938,7 @@ function createTreeModel1(x, y, z, rotation) {
     geometry = new THREE.SphereGeometry(10, 32, 32);
     geometry.scale(2, 0.5, 1.5);
 
-    material = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 60, -20);
     tree.add(mesh);
@@ -935,9 +946,102 @@ function createTreeModel1(x, y, z, rotation) {
     geometry = new THREE.SphereGeometry(10, 32, 32);
     geometry.scale(2, 0.5, 1.5);
 
-    material = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 60, -5);
+    tree.add(mesh);
+
+    tree.position.set(x, y, z);
+    tree.rotation.y = rotation;
+
+    scene.add(tree);
+    geometries.push(tree);
+}
+
+function createTreeModel2(x, y, z, rotation) {
+    'use strict'
+    var tree = new THREE.Object3D();
+
+    geometry = new THREE.CylinderGeometry(3, 3, 30, 50);
+    material = new THREE.MeshStandardMaterial({ color: 0xa45729, wireframe: false });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 30, 0);
+
+    tree.add(mesh);
+
+    geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
+    material = new THREE.MeshStandardMaterial({ color: 0x933f28, wireframe: false });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 50, 10);
+
+    mesh.rotateX(Math.PI / 4);
+
+    tree.add(mesh);
+    geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 50, -10);
+
+    mesh.rotateX(-Math.PI / 4);
+
+    tree.add(mesh);
+    geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 50, 0);
+
+    tree.add(mesh);
+
+    geometry = new THREE.SphereGeometry(15, 32, 32);
+    geometry.scale(2, 0.5, 1);
+
+    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 60, 0);
+    mesh.rotateY(Math.PI / 2);
+    tree.add(mesh);
+
+    tree.position.set(x, y, z);
+    tree.rotation.y = rotation;
+
+    scene.add(tree);
+    geometries.push(tree);
+}
+
+function createTreeModel3(x, y, z, rotation) {
+    'use strict'
+    var tree = new THREE.Object3D();
+
+    geometry = new THREE.CylinderGeometry(3.5, 3.5, 45, 50);
+    material = new THREE.MeshStandardMaterial({ color: 0xa45729, wireframe: false });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 30, 0);
+
+    mesh.rotateX(-Math.PI / 4);
+    tree.add(mesh);
+
+    geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
+    material = new THREE.MeshStandardMaterial({ color: 0x933f28, wireframe: false });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 45, 10);
+
+    mesh.rotateX(Math.PI / 4);
+    tree.add(mesh);
+
+    geometry = new THREE.SphereGeometry(18, 32, 32);
+    geometry.scale(2, 0.5, 1.5);
+
+    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 45, -27);
+    mesh.rotateX(-Math.PI / 4);
+    tree.add(mesh);
+
+    geometry = new THREE.SphereGeometry(14, 32, 32);
+    geometry.scale(1, 0.5, 1.5);
+
+    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 55, 10);
+
     tree.add(mesh);
 
     tree.position.set(x, y, z);
