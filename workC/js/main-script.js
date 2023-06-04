@@ -3,7 +3,7 @@
 //////////////////////
 var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
-var material, geometry, mesh, ovni, house;
+var material, geometry, mesh, ovni, house, moon;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
@@ -500,12 +500,28 @@ function createScene() {
     scene = new THREE.Scene();
     scene.add(new THREE.AxesHelper(40));
 
-    scene.background = new THREE.Color( 0xE7DAF9 );
-
     createOvni();
+    createMoon();
     createHouse();
     createTerrain();
+    createLights();
 
+
+}
+
+/////////////////////
+/* CREATE LIGHT(S) */
+/////////////////////
+
+function createLights() {
+    'use strict';
+    var light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(1, 1, 1);
+    var lightTarget = new THREE.Object3D();
+    lightTarget.position.set(-1, -1, -1);
+    light.target = lightTarget;
+    scene.add(light);
+    scene.add(lightTarget);
 
 }
 
@@ -539,7 +555,7 @@ function createCamera1() {
 function createCamera2() {
     'use strict';
     const aspectRatio = window.innerWidth / window.innerHeight;
-    const frustumSize = 100;
+    const frustumSize = 200;
 
     camera2 = new THREE.OrthographicCamera(
         frustumSize * aspectRatio / -2,
@@ -622,14 +638,14 @@ function createOvni(){
     'use strict'
 
     ovni = new THREE.Object3D(); 
-    geometry = new THREE.SphereGeometry( 10, 32, 30 );
+    geometry = new THREE.SphereGeometry( 20, 32, 30 );
     material = new THREE.MeshBasicMaterial( { color: 0x34eb3a, wireframe: false } ); 
 
     mesh = new THREE.Mesh( geometry, material );
     mesh.scale.set(1,0.2,1);
     ovni.add(mesh);
 
-    geometry = new THREE.SphereBufferGeometry(5, 30, 30, 0, 2*Math.PI, 0, 0.5 * Math.PI);
+    geometry = new THREE.SphereBufferGeometry(10, 30, 30, 0, 2*Math.PI, 0, 0.5 * Math.PI);
     material = new THREE.MeshBasicMaterial( { color: 0x91a191, wireframe: false } );
     mesh = new THREE.Mesh( geometry, material);
 
@@ -646,25 +662,39 @@ function createOvni(){
 
         ovni.add(spherePos);
 
-        geometry = new THREE.SphereGeometry( 1, 32, 30 );
+        geometry = new THREE.SphereGeometry( 2, 32, 30 );
         material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe: false } );
         mesh = new THREE.Mesh( geometry, material );
-        mesh.position.set(6,-1, 0);
+        mesh.position.set(12,-2, 0);
         spherePos.add(mesh);
         i++;
     }
 
-    geometry = new THREE.CylinderGeometry( 3, 3, 1, 64);
+    geometry = new THREE.CylinderGeometry( 6, 6, 1, 64);
     material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, -2, 0);
+    mesh.position.set(0, -4, 0);
 
     ovni.add(mesh);
 
-    ovni.position.set(0,30,0);
+    ovni.position.set(0,50,0);
 
-    ovni.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0, colisions: true};
+    ovni.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0};
     scene.add(ovni);
+}
+
+function createMoon() {
+    'use strict';
+
+    moon = new THREE.Object3D(); 
+    geometry = new THREE.SphereGeometry( 15, 32, 30 );
+    material = new THREE.MeshBasicMaterial( { color: 0xF6F1D5, wireframe: false } ); 
+
+    mesh = new THREE.Mesh( geometry, material );
+    moon.add(mesh);
+    moon.position.set(-80,90, -60);
+
+    scene.add(moon);
 }
 
 function createHouse() {
@@ -707,12 +737,12 @@ function createHouse() {
     house.add(doors);
     house.add(roof);
 
-    house.position.set(-50,0,80);
+    house.position.set(70,13,-140);
     scene.add(house);
 }
 
 function createTerrain(){
-    const heightMapTexture = new THREE.TextureLoader().load("../workC/heightmap.png");
+    const heightMapTexture = new THREE.TextureLoader().load("./heightmap.png");
 
     const geometry = new THREE.PlaneGeometry(400, 400, 99, 99);
 
@@ -826,6 +856,10 @@ function createGrassTexture(){
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setRenderTarget(null);
 
+    
+}
+
+function createTreeModel1(){
     
 }
 
