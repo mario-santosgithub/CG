@@ -3,12 +3,16 @@
 //////////////////////
 var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
-var material, geometry, mesh, ovni, house, moon, terrain, skyDome;
+var material, geometry, mesh, house, moon, terrain, skyDome, tree;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
 var textureBuffer;
 var renderer_sky, renderer_grass;
+
+var geometries = [ovni = new THREE.Object3D(), 
+    house = new THREE.Object3D(), 
+    moon = new THREE.Object3D()]
 
 var flower_color_array = ["ffffff", "ffff00", "c8a2c8", "add8e6"]
 
@@ -640,19 +644,18 @@ function createCamera5() {
 function createOvni(){
     'use strict'
 
-    ovni = new THREE.Object3D(); 
     geometry = new THREE.SphereGeometry( 20, 32, 30 );
     material = new THREE.MeshBasicMaterial( { color: 0x34eb3a, wireframe: false } ); 
 
     mesh = new THREE.Mesh( geometry, material );
     mesh.scale.set(1,0.2,1);
-    ovni.add(mesh);
+    geometries[0].add(mesh);
 
     geometry = new THREE.SphereBufferGeometry(10, 30, 30, 0, 2*Math.PI, 0, 0.5 * Math.PI);
     material = new THREE.MeshBasicMaterial( { color: 0x91a191, wireframe: false } );
     mesh = new THREE.Mesh( geometry, material);
 
-    ovni.add(mesh);
+    geometries[0].add(mesh);
 
     const nLights = 8;
 
@@ -662,7 +665,7 @@ function createOvni(){
         var spherePos = new THREE.Object3D();
 
         spherePos.rotation.y = i * (2 * Math.PI)/nLights
-        ovni.add(spherePos);
+        geometries[0].add(spherePos);
 
         geometry = new THREE.SphereGeometry( 2, 32, 30 );
         material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe: false } );
@@ -690,70 +693,65 @@ function createOvni(){
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, -4, 0);
 
-    ovni.add(mesh);
+    geometries[0].add(mesh);
 
-    ovni.position.set(0,150,0);
+    geometries[0].position.set(0,150,0);
 
-    ovni.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0};
-    scene.add(ovni);
+    geometries[0].userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0};
+    scene.add(geometries[0]);
 }
 
 function createMoon() {
     'use strict';
 
-    moon = new THREE.Object3D(); 
     geometry = new THREE.SphereGeometry( 15, 32, 30 );
     material = new THREE.MeshBasicMaterial( { color: 0xF6F1D5, wireframe: false } ); 
 
     mesh = new THREE.Mesh( geometry, material );
-    moon.add(mesh);
-    moon.position.set(-80,210, -60);
+    geometries[2].add(mesh);
+    geometries[2].position.set(-80,210, -60);
 
-    scene.add(moon);
+    scene.add(geometries[2]);
 }
 
 function createHouse() {
     'use strict';
 
-    house = new THREE.Object3D();
     geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesH, 3));
     geometry.setIndex(new THREE.BufferAttribute(indicesH, 1));
 
 
     material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    var triangle = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, material);
+    geometries[1].add(mesh);
 
     geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesW, 3));
     geometry.setIndex(new THREE.BufferAttribute(indicesW, 1));
 
     material = new THREE.MeshBasicMaterial({ color: 0x0099cc });
-    var windows = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, material);
+    geometries[1].add(mesh);
 
     geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesD, 3));
     geometry.setIndex(new THREE.BufferAttribute(indicesD, 1));
 
     material = new THREE.MeshBasicMaterial({ color: 0x0099cc });
-    var doors = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, material);
+    geometries[1].add(mesh);
 
     geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesT, 3));
     geometry.setIndex(new THREE.BufferAttribute(indicesT, 1));
 
     material = new THREE.MeshBasicMaterial({ color: 0xaa6500 });
-    var roof = new THREE.Mesh(geometry, material);
+    mesh = new THREE.Mesh(geometry, material);
+    geometries[1].add(mesh);
 
-
-
-    house.add(triangle);
-    house.add(windows);
-    house.add(doors);
-    house.add(roof);
-
-    house.position.set(70,13,-140);
-    scene.add(house);
+    geometries[1].position.set(70,13,-140);
+    scene.add(geometries[1]);
 }
 
 function createSkyDome(){
@@ -892,7 +890,7 @@ function createGrassTexture(){
 
 function createTreeModel1(x, y, z, rotation) {
     'use strict'
-    var tree = new THREE.Object3D();
+    tree = new THREE.Object3D();
 
     geometry = new THREE.CylinderGeometry(3, 3, 30, 50);
     material = new THREE.MeshBasicMaterial({ color: 0xa45729, wireframe: false });
@@ -945,6 +943,7 @@ function createTreeModel1(x, y, z, rotation) {
     tree.rotation.y = rotation;
 
     scene.add(tree);
+    geometries.push(tree);
 }
 
 
@@ -963,12 +962,12 @@ function update(){
 
     ovni_directions.multiplyScalar(movement_speed);
 
-    ovni.position.add(ovni_directions);
+    geometries[0].position.add(ovni_directions);
     ovni_directions.set(0, 0, 0);
     }
 
 
-    ovni.rotation.y += 2 * delta;
+    geometries[0].rotation.y += 2 * delta;
 
 }
 
@@ -1042,16 +1041,16 @@ function onKeyDown(e) {
 
     switch (e.keyCode) {
     case 37:
-        ovni.userData.moving_left = 1;
+        geometries[0].userData.moving_left = 1;
         break;
     case 38:
-        ovni.userData.moving_forward = 1;
+        geometries[0].userData.moving_forward = 1;
         break;
     case 39:
-        ovni.userData.moving_right = 1;
+        geometries[0].userData.moving_right = 1;
         break;
     case 40:
-        ovni.userData.moving_back = 1;
+        geometries[0].userData.moving_back = 1;
         break;    
     case 49: // 1
         createGrassTexture();
@@ -1068,6 +1067,25 @@ function onKeyDown(e) {
     case 53: // 5
         camera = camera5;
         break;
+    case 81: // Q
+    case 113: // q
+        for (let i=0; i<geometries.length; i++) {
+            console.log(geometries.children);
+            if (geometries[i] instanceof THREE.Object3D) {
+                const meshes = geometries[i].children.filter(child => child instanceof THREE.Mesh);
+                console.log("here2");
+                for(let j=0; j < meshes.length; j++) {
+                    const mesh = meshes[j];
+                    const oldMaterial = mesh.material;
+                    const newMaterial = new THREE.MeshPhongMaterial({ color: oldMaterial.color });
+    
+                    newMaterial.map = oldMaterial.map;
+                    newMaterial.normalMap = oldMaterial.normalMap;
+    
+                    mesh.material = newMaterial;
+                }
+            }
+        }
         
     }       
 }
@@ -1080,16 +1098,16 @@ function onKeyUp(e){
 
     switch(e.keyCode) {
         case 37:
-        ovni.userData.moving_left = 0;
+        geometries[0].userData.moving_left = 0;
         break;
     case 38:
-        ovni.userData.moving_forward = 0;
+        geometries[0].userData.moving_forward = 0;
         break;
     case 39:
-        ovni.userData.moving_right = 0;
+        geometries[0].userData.moving_right = 0;
         break;
     case 40:
-        ovni.userData.moving_back = 0;
+        geometries[0].userData.moving_back = 0;
         break;    
         
     }
