@@ -659,7 +659,6 @@ function createOvni(){
         var spherePos = new THREE.Object3D();
 
         spherePos.rotation.y = i * (2 * Math.PI)/nLights
-
         ovni.add(spherePos);
 
         geometry = new THREE.SphereGeometry( 2, 32, 30 );
@@ -667,6 +666,19 @@ function createOvni(){
         mesh = new THREE.Mesh( geometry, material );
         mesh.position.set(12,-2, 0);
         spherePos.add(mesh);
+
+        const light = new THREE.SpotLight(0xffffff); // White light
+        light.position.set(mesh.position.x, -1, mesh.position.z); // Position the light to point downwards  
+        light.angle = Math.PI / 30;
+        
+        const targetPosition = new THREE.Vector3();
+        targetPosition.copy(light.position).add(new THREE.Vector3(0, -50, 0));
+        light.target.position.copy(targetPosition);
+
+
+        spherePos.add(light);
+        spherePos.add(light.target);
+        
         i++;
     }
 
