@@ -498,14 +498,16 @@ function createScene() {
     'use strict';
 
     scene = new THREE.Scene();
-    scene.add(new THREE.AxesHelper(40));
 
     createOvni();
     createMoon();
     createHouse();
     createTerrain();
     createLights();
-
+    createTreeModel1(0, 0, 0, 0);  
+    createTreeModel1(90, 0, 70, Math.PI / 4); 
+    createTreeModel1(-90, 0, -90, -Math.PI / 2);
+    createTreeModel1(-100,0, 90, -Math.PI / 8);
 
 }
 
@@ -689,7 +691,7 @@ function createOvni(){
 
     ovni.add(mesh);
 
-    ovni.position.set(0,50,0);
+    ovni.position.set(0,150,0);
 
     ovni.userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0};
     scene.add(ovni);
@@ -704,7 +706,7 @@ function createMoon() {
 
     mesh = new THREE.Mesh( geometry, material );
     moon.add(mesh);
-    moon.position.set(-80,90, -60);
+    moon.position.set(-80,210, -60);
 
     scene.add(moon);
 }
@@ -871,8 +873,61 @@ function createGrassTexture(){
     
 }
 
-function createTreeModel1(){
-    
+function createTreeModel1(x, y, z, rotation) {
+    'use strict'
+    var tree = new THREE.Object3D();
+
+    geometry = new THREE.CylinderGeometry(3, 3, 30, 50);
+    material = new THREE.MeshBasicMaterial({ color: 0xa45729, wireframe: false });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 30, 0);
+
+    tree.add(mesh);
+
+    geometry = new THREE.CylinderGeometry(2, 2, 20, 50);
+    material = new THREE.MeshBasicMaterial({ color: 0x933f28, wireframe: false });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 45, 5);
+
+    mesh.rotateX(Math.PI / 4);
+
+    tree.add(mesh);
+    geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 50, -10);
+
+    mesh.rotateX(-Math.PI / 4);
+
+    tree.add(mesh);
+
+    geometry = new THREE.SphereGeometry(15, 32, 32);
+    geometry.scale(1, 0.5, 1);
+
+    material = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 55, 10);
+    tree.add(mesh);
+
+    geometry = new THREE.SphereGeometry(10, 32, 32);
+    geometry.scale(2, 0.5, 1.5);
+
+    material = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 60, -20);
+    tree.add(mesh);
+
+    geometry = new THREE.SphereGeometry(10, 32, 32);
+    geometry.scale(2, 0.5, 1.5);
+
+    material = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 60, -5);
+    tree.add(mesh);
+
+    tree.position.set(x, y, z);
+    tree.rotation.y = rotation;
+
+    scene.add(tree);
 }
 
 
