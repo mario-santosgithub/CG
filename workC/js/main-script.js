@@ -3,7 +3,7 @@
 //////////////////////
 var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
-var material, geometry, mesh, ovni, house, moon;
+var material, geometry, mesh, ovni, house, moon, terrain, skyDome;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
@@ -503,6 +503,7 @@ function createScene() {
     createMoon();
     createHouse();
     createTerrain();
+
     createLights();
     createTreeModel1(0, 0, 0, 0);  
     createTreeModel1(90, 0, 70, Math.PI / 4); 
@@ -612,9 +613,9 @@ function createCamera4() {
         2000
     );
 
-    camera4.position.x = 600;
-    camera4.position.y = 600;
-    camera4.position.z = 600;
+    camera4.position.x = 400;
+    camera4.position.y = 400;
+    camera4.position.z = 400;
     camera4.lookAt(scene.position);
 }
 
@@ -755,28 +756,44 @@ function createHouse() {
     scene.add(house);
 }
 
+function createSkyDome(){
+    const geometry = new THREE.SphereGeometry(700, 25, 25);
+
+    var material = new THREE.MeshStandardMaterial({
+        color: 0x00008b,
+        wireframe: false
+
+    });
+
+    skyDome = new THREE.Mesh(geometry, material);
+    scene.add(skyDome);
+}
+
 function createTerrain(){
     const heightMapTexture = new THREE.TextureLoader().load("./heightmap.png");
+    heightMapTexture.wrapS = THREE.RepeatWrapping;
+    heightMapTexture.wrapT = THREE.RepeatWrapping;   
 
-    const geometry = new THREE.PlaneGeometry(400, 400, 99, 99);
+    const geometry = new THREE.PlaneGeometry(500, 500, 99, 99);
 
     geometry.rotateX(-Math.PI / 2);
 
 
-    const material = new THREE.MeshPhongMaterial({
+    var material = new THREE.MeshStandardMaterial({
         displacementMap: heightMapTexture,
         displacementScale: 50,
-        color: 0x00ff00,
-        wireframe: true
+        color: 0x74663b,
+        wireframe: false
+
     });
 
-   const mesh = new THREE.Mesh(geometry, material);
-   scene.add(mesh);
+   terrain = new THREE.Mesh(geometry, material);
+   scene.add(terrain);
 }
 
 function createGrassField(){
     grass_scene = new THREE.Scene();
-    grass_scene.background = new THREE.Color(0x90EE90);
+    grass_scene.background = new THREE.Color(0x90fe90);
 
     var geometry = new THREE.SphereGeometry(2, 32, 16);
 
@@ -856,20 +873,20 @@ function createNightSky(){
 function createGrassTexture(){
     grass_scene = new THREE.Scene();
 
-    textureBuffer = new THREE.WebGLRenderTarget(400, 400, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter});
+    textureBuffer = new THREE.WebGLRenderTarget(400, 400, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, wrapS: THREE.RepeatWrapping, wrapT: THREE.RepeatWrapping});
 
     createGrassField();
 
-    renderer = new THREE.WebGLRenderer({
-        antialias: true
-    });
-
-    renderer.setSize(400,400);
+    renderer.setSize(100,100);
     renderer.setRenderTarget(textureBuffer);
     renderer.render(grass_scene, cameraGrass);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setRenderTarget(null);
 
+    textureBuffer.texture.repeat.set(100,100);
+    terrain.material.color.setHex( 0xffffff );
+    terrain.material.map = textureBuffer.texture;
+    terrain.material.needsUpdate = true;
     
 }
 
@@ -1037,7 +1054,7 @@ function onKeyDown(e) {
         ovni.userData.moving_back = 1;
         break;    
     case 49: // 1
-        camera = camera1;
+        createGrassTexture();
         break;
     case 50: // 2
         camera = camera2;
