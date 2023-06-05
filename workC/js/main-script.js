@@ -4,13 +4,14 @@
 var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, terrain, skyDome, tree;
-var toon, phong, lambert, basic, directLightOn = false;
+var toon, phong, lambert, basic, directLightOn = true;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
 var textureBuffer;
 var renderer_sky, renderer_grass;
 var dirLight;
+var sky_texture = false, grass_texture = false;
 
 var geometries = [ovni = new THREE.Object3D(), 
     house = new THREE.Object3D(), 
@@ -803,7 +804,7 @@ function createTerrain(){
 function createGrassField(){
     grass_scene.background = new THREE.Color(0x90fe90);
 
-    var geometry = new THREE.SphereGeometry(2, 32, 16);
+    var geometry = new THREE.SphereGeometry(5, 32, 16);
 
     for (var i = 0; i < 300; i += 1) {
 
@@ -812,8 +813,8 @@ function createGrassField(){
 
         material = new THREE.MeshBasicMaterial({ color: colour });
         var mesh = new THREE.Mesh(geometry, material);
-        mesh.position.x = (Math.random()) * 396 - 198;
-        mesh.position.y = (Math.random()) * 396 - 198;
+        mesh.position.x = (Math.random()) * 390 - 195;
+        mesh.position.y = (Math.random()) * 390 - 195;
         mesh.position.z = 0;
 
         grass_scene.add(mesh);
@@ -895,6 +896,7 @@ function createGrassTexture(){
     terrain.material.map = textureBuffer.texture;
     terrain.material.needsUpdate = true;
     
+    grass_texture = false;
 }
 
 function createSkyTexture(){
@@ -914,7 +916,8 @@ function createSkyTexture(){
     skyDome.material.color.setHex( 0xffffff );
     skyDome.material.map = textureBuffer.texture;
     skyDome.material.needsUpdate = true;
-    
+
+    sky_texture = false;
 }
 
 function createTreeModel1(x, y, z, rotation) {
@@ -1068,36 +1071,6 @@ function createTreeModel3(x, y, z, rotation) {
     geometries.push(tree);
 }
 
-
-////////////
-/* UPDATE */
-////////////
-function update(){
-    'use strict';
-    const delta = clock.getDelta();
-    const movement_speed = delta * 50;
-    ovni_directions.x += (ovni.userData.moving_left - ovni.userData.moving_right);
-    ovni_directions.z += (ovni.userData.moving_forward - ovni.userData.moving_back);
-
-    if (!ovni_directions.equals(0, 0, 0)) {
-    ovni_directions.normalize();
-
-    ovni_directions.multiplyScalar(movement_speed);
-
-    geometries[0].position.add(ovni_directions);
-    ovni_directions.set(0, 0, 0);
-    }
-
-    if (!directLightOn) {
-        dirLight.intensity = 0;
-    }
-    else{
-        dirLight.intensity = 0.1;
-    }
-    geometries[0].rotation.y += 2 * delta;
-
-}
-
 function changeToPhong() {
 
     for (let i=0; i<geometries.length; i++) {
@@ -1186,6 +1159,36 @@ function changeToToon() {
     toon = false;
 }
 
+
+////////////
+/* UPDATE */
+////////////
+function update(){
+    'use strict';
+    const delta = clock.getDelta();
+    const movement_speed = delta * 50;
+    ovni_directions.x += (ovni.userData.moving_left - ovni.userData.moving_right);
+    ovni_directions.z += (ovni.userData.moving_forward - ovni.userData.moving_back);
+
+    if (!ovni_directions.equals(0, 0, 0)) {
+    ovni_directions.normalize();
+
+    ovni_directions.multiplyScalar(movement_speed);
+
+    geometries[0].position.add(ovni_directions);
+    ovni_directions.set(0, 0, 0);
+    }
+
+    if (!directLightOn) {
+        dirLight.intensity = 0;
+    }
+    else{
+        dirLight.intensity = 0.1;
+    }
+    geometries[0].rotation.y += 2 * delta;
+
+}
+
 /////////////
 /* DISPLAY */
 /////////////
@@ -1227,8 +1230,6 @@ function animate() {
     'use strict';
 
     update();
-    render();
-    requestAnimationFrame(animate);
 
     if (lambert) {
         changeToLambert();
@@ -1242,6 +1243,18 @@ function animate() {
     else if (basic){
         changeToBasic();
     }
+
+    if(grass_texture){
+        createGrassTexture();
+    }
+
+    if(sky_texture){
+        createSkyTexture();
+    }
+
+    render();
+    requestAnimationFrame(animate);
+
 
 }
 
@@ -1281,10 +1294,10 @@ function onKeyDown(e) {
         geometries[0].userData.moving_back = 1;
         break;    
     case 49: // 1
-        createGrassTexture();
+        grass_texture = true;
         break;
     case 50: // 2
-        createSkyTexture();
+        sky_texture = true;
         break;
     case 51: // 3
         camera = camera3;
