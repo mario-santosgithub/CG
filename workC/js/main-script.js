@@ -508,9 +508,8 @@ function createScene() {
     createMoon();
     createHouse();
     createTerrain();
+    createSkyDome();
 
-    createLights();
-    createLights();
     createTreeModel1(0, 0, 0, 0);  
     createTreeModel1(90, 0, 70, Math.PI / 4); 
     createTreeModel1(-90, -5, -90, -Math.PI / 2);
@@ -520,27 +519,9 @@ function createScene() {
     createTreeModel2(-140, 0, 0, 0);
     createTreeModel2(0, -5, -140, Math.PI / 4);
     createTreeModel3(190, -5, 20, 0);
-    createTreeModel3(-190, -5, 190, 0);
     createTreeModel3(130, -5, 170, 0);
     createTreeModel3(-150, -10, -150, 0);
     
-
-}
-
-/////////////////////
-/* CREATE LIGHT(S) */
-/////////////////////
-
-function createLights() {
-    'use strict';
-    var light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(1, 1, 1);
-    var lightTarget = new THREE.Object3D();
-    lightTarget.position.set(-1, -1, -1);
-    light.target = lightTarget;
-    
-    scene.add(light);
-    scene.add(lightTarget);
 
 }
 
@@ -642,9 +623,9 @@ function createCamera5() {
                                          window.innerWidth / window.innerHeight,
                                          1,
                                          1000);
-    camera5.position.x = 200;
+    camera5.position.x = 170;
     camera5.position.y = 200;
-    camera5.position.z = 200;
+    camera5.position.z = 170;
     camera5.lookAt(scene.position);
     camera5.rotateZ(Math.PI);    
 }
@@ -717,13 +698,27 @@ function createMoon() {
     'use strict';
 
     geometry = new THREE.SphereGeometry( 15, 32, 30 );
-    material = new THREE.MeshStandardMaterial( { color: 0xF6F1D5, wireframe: false } ); 
+    material = new THREE.MeshStandardMaterial( { color: 0xffffff, emissive: 0xEBC815, emissiveIntensity: 0.3, wireframe: false } ); 
 
     mesh = new THREE.Mesh( geometry, material );
     geometries[2].add(mesh);
-    geometries[2].position.set(-80,210, -60);
+    geometries[2].position.set(-120, 180, 50);
+
+    var light = new THREE.DirectionalLight(0xffffff, 0.5);
+    light.position.set(15, 32, 30);
+    var lightTarget = new THREE.Object3D();
+    lightTarget.position.set(0, 0, 0);
+    light.target = lightTarget;
+    
+    scene.add(light);
+    scene.add(lightTarget);
 
     scene.add(geometries[2]);
+
+    /*
+    light = new THREE.AmbientLight( 0x222222);          ASK
+    scene.add( light );
+    */
 }
 
 function createHouse() {
@@ -767,9 +762,11 @@ function createHouse() {
 }
 
 function createSkyDome(){
-    const geometry = new THREE.SphereGeometry(700, 25, 25);
+
+    var geometry = new THREE.SphereGeometry(250, 32, 16);
 
     var material = new THREE.MeshStandardMaterial({
+        side: THREE.BackSide,
         color: 0x00008b,
         wireframe: false
 
@@ -802,7 +799,6 @@ function createTerrain(){
 }
 
 function createGrassField(){
-    grass_scene = new THREE.Scene();
     grass_scene.background = new THREE.Color(0x90fe90);
 
     var geometry = new THREE.SphereGeometry(2, 32, 16);
@@ -842,7 +838,6 @@ function createGrassField(){
 
 
 function createNightSky(){
-    sky_scene = new THREE.Scene();
     sky_scene.background = new THREE.Color(0x00008B);
 
     var geometry = new THREE.SphereGeometry(2, 32, 16);
@@ -897,6 +892,26 @@ function createGrassTexture(){
     terrain.material.color.setHex( 0xffffff );
     terrain.material.map = textureBuffer.texture;
     terrain.material.needsUpdate = true;
+    
+}
+
+function createSkyTexture(){
+    sky_scene = new THREE.Scene();
+
+    textureBuffer = new THREE.WebGLRenderTarget(400, 400, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, wrapS: THREE.RepeatWrapping, wrapT: THREE.RepeatWrapping});
+
+    createNightSky();
+
+    renderer.setSize(100,100);
+    renderer.setRenderTarget(textureBuffer);
+    renderer.render(sky_scene, cameraSky);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setRenderTarget(null);
+
+    textureBuffer.texture.repeat.set(100,100);
+    skyDome.material.color.setHex( 0xffffff );
+    skyDome.material.map = textureBuffer.texture;
+    skyDome.material.needsUpdate = true;
     
 }
 
@@ -1236,7 +1251,7 @@ function onKeyDown(e) {
         createGrassTexture();
         break;
     case 50: // 2
-        camera = camera2;
+        createSkyTexture();
         break;
     case 51: // 3
         camera = camera3;
