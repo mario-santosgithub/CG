@@ -4,13 +4,15 @@
 var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, terrain, skyDome, tree;
-var toon, phong, lambert, basic, directLightOn = true;
+var toon, phong, lambert, basic, directLightOn = true, pointLightOn = true, spoLightOn = true;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
 var textureBuffer;
 var renderer_sky, renderer_grass;
-var dirLight;
+var dirLight, poiLight, spoLight;
+const nLights = 8;
+var ovniLights = [];
 var sky_texture = false, grass_texture = false;
 
 var geometries = [ovni = new THREE.Object3D(), 
@@ -653,7 +655,7 @@ function createOvni(){
     geometries[0].add(mesh);
 
     const nLights = 8;
-
+    poiLight = new THREE.PointLight(0xffffff, 0.02); 
     var i = 0;
 
     while( i < nLights ){
@@ -667,11 +669,9 @@ function createOvni(){
         mesh = new THREE.Mesh( geometry, material );
         mesh.position.set(12,-2, 0);
         spherePos.add(mesh);
-
-        var light = new THREE.PointLight(0xffffff, 0.02); 
-        light.position.set(mesh.position.x, -2, mesh.position.z); 
-
-        spherePos.add(light);
+        poiLight.position.set(mesh.position.x, -2, mesh.position.z); 
+        ovniLights.push(poiLight);
+        spherePos.add(poiLight);
         i++;
     }
 
@@ -680,16 +680,16 @@ function createOvni(){
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, -4, 0);
 
-    light = new THREE.SpotLight(0xffffff, 0.4);
-    light.position.set(mesh.position.x, -1, mesh.position.z);  
-    light.angle = Math.PI / 15;
+    spoLight = new THREE.SpotLight(0xffffff, 0.4);
+    spoLight.position.set(mesh.position.x, -1, mesh.position.z);  
+    spoLight.angle = Math.PI / 15;
     
     const targetPosition = new THREE.Vector3();
-    targetPosition.copy(light.position).add(new THREE.Vector3(0, -50, 0));
-    light.target.position.copy(targetPosition);
+    targetPosition.copy(spoLight.position).add(new THREE.Vector3(0, -50, 0));
+    spoLight.target.position.copy(targetPosition);
 
-    mesh.add(light);
-    mesh.add(light.target);
+    mesh.add(spoLight);
+    mesh.add(spoLight.target);
     geometries[0].add(mesh);
 
     geometries[0].position.set(0,150,0);
@@ -1185,6 +1185,23 @@ function update(){
     else{
         dirLight.intensity = 0.1;
     }
+    if (!pointLightOn) {
+        for(let i = 0; i < nLights; i++){
+        ovniLights[i].intensity = 0;
+        }
+    }
+    else{
+        for(let i = 0; i < nLights; i++){
+            ovniLights[i].intensity = 0.02;
+        }
+    }
+    if (!spoLightOn) {
+        spoLight.intensity = 0;
+    }
+    else{
+        spoLight.intensity = 0.4;
+    }
+
     geometries[0].rotation.y += 2 * delta;
 
 }
@@ -1329,7 +1346,15 @@ function onKeyDown(e) {
     case 68: //D
     case 100://d
         directLightOn = !directLightOn;
-        break;    
+        break; 
+    case 80: //P   
+    case 112://p
+        pointLightOn = !pointLightOn;
+    break; 
+    case 83: //S  
+    case 115://s
+        spoLightOn = !spoLightOn;
+    break;
     }
 }
 ///////////////////////
