@@ -1,7 +1,7 @@
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
+var camera, camera1, camera2, camera3, camera4, camera5, camera6, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, terrain, skyDome, tree;
 var toon, phong, lambert, basic, directLightOn = true, pointLightOn = true, spoLightOn = true;
@@ -14,6 +14,7 @@ var dirLight, poiLight, spoLight;
 const nLights = 8;
 var ovniLights = [];
 var sky_texture = false, grass_texture = false;
+var vrButton;
 
 var geometries = [ovni = new THREE.Object3D(), 
     house = new THREE.Object3D(), 
@@ -634,6 +635,14 @@ function createCamera5() {
     camera5.rotateZ(Math.PI);    
 }
 
+function createCameraStereo() {
+    'use strict';
+
+    camera6 = new THREE.StereoCamera();
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+}
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
@@ -1212,6 +1221,11 @@ function update(){
 function render() {
     'use strict';
     renderer.render(scene, camera);
+    renderer.setAnimationLoop( function () {
+
+        renderer.render( scene, camera );
+    
+    } );
 }
 
 ////////////////////////////////
@@ -1223,9 +1237,13 @@ function init() {
         antialias: true
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    vrButton = VRButton.createButton( renderer );
     document.body.appendChild(renderer.domElement);
+    document.body.appendChild( vrButton );
     createScene();
     clock.start();
+
 
     createCamera1();
     createCamera2();
@@ -1233,6 +1251,7 @@ function init() {
     createCamera4();
     createCamera5();
 
+    renderer.xr.enabled = false;
     camera = camera4; // start with ortogonal
 
     window.addEventListener("keydown", onKeyDown);
@@ -1324,6 +1343,10 @@ function onKeyDown(e) {
         break;
     case 53: // 5
         camera = camera5;
+        break;
+    case 54: // 6
+        //camera = camera6; ???
+        renderer.xr.enabled = true;
         break;
     case 81: // Q
     case 113: // q
