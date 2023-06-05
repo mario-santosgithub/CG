@@ -4,12 +4,13 @@
 var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, terrain, skyDome, tree;
-var toon, phong, lambert;
+var toon, phong, lambert, basic, directLightOn = false;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
 var textureBuffer;
 var renderer_sky, renderer_grass;
+var dirLight;
 
 var geometries = [ovni = new THREE.Object3D(), 
     house = new THREE.Object3D(), 
@@ -666,18 +667,10 @@ function createOvni(){
         mesh.position.set(12,-2, 0);
         spherePos.add(mesh);
 
-        const light = new THREE.SpotLight(0xffffff); // White light
-        light.position.set(mesh.position.x, -1, mesh.position.z); // Position the light to point downwards  
-        light.angle = Math.PI / 30;
-        
-        const targetPosition = new THREE.Vector3();
-        targetPosition.copy(light.position).add(new THREE.Vector3(0, -50, 0));
-        light.target.position.copy(targetPosition);
-
+        var light = new THREE.PointLight(0xffffff, 0.02); 
+        light.position.set(mesh.position.x, -2, mesh.position.z); 
 
         spherePos.add(light);
-        spherePos.add(light.target);
-        
         i++;
     }
 
@@ -686,6 +679,16 @@ function createOvni(){
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, -4, 0);
 
+    light = new THREE.SpotLight(0xffffff, 0.4);
+    light.position.set(mesh.position.x, -1, mesh.position.z);  
+    light.angle = Math.PI / 15;
+    
+    const targetPosition = new THREE.Vector3();
+    targetPosition.copy(light.position).add(new THREE.Vector3(0, -50, 0));
+    light.target.position.copy(targetPosition);
+
+    mesh.add(light);
+    mesh.add(light.target);
     geometries[0].add(mesh);
 
     geometries[0].position.set(0,150,0);
@@ -703,57 +706,56 @@ function createMoon() {
     mesh = new THREE.Mesh( geometry, material );
     geometries[2].add(mesh);
     geometries[2].position.set(-120, 180, 50);
-
-    var light = new THREE.DirectionalLight(0xffffff, 0.5);
-    light.position.set(15, 32, 30);
+    
+    dirLight = new THREE.DirectionalLight(0xffffff, 0.1);
+    dirLight.position.set(15, 32, 30);
     var lightTarget = new THREE.Object3D();
     lightTarget.position.set(0, 0, 0);
-    light.target = lightTarget;
+    dirLight.target = lightTarget;
     
-    scene.add(light);
+    scene.add(dirLight);
     scene.add(lightTarget);
-
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    scene.add(ambientLight);
     scene.add(geometries[2]);
-
-    /*
-    light = new THREE.AmbientLight( 0x222222);          ASK
-    scene.add( light );
-    */
 }
-
 function createHouse() {
     'use strict';
 
     geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesH, 3));
     geometry.setIndex(new THREE.BufferAttribute(indicesH, 1));
+    geometry.computeVertexNormals();
 
 
-    material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    material = new THREE.MeshStandardMaterial({ color: 0xffffff });
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
     geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesW, 3));
     geometry.setIndex(new THREE.BufferAttribute(indicesW, 1));
+    geometry.computeVertexNormals();
 
-    material = new THREE.MeshBasicMaterial({ color: 0x0099cc });
+    material = new THREE.MeshStandardMaterial({ color: 0x0099cc });
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
     geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesD, 3));
     geometry.setIndex(new THREE.BufferAttribute(indicesD, 1));
+    geometry.computeVertexNormals();
 
-    material = new THREE.MeshBasicMaterial({ color: 0x0099cc });
+    material = new THREE.MeshStandardMaterial({ color: 0x0099cc });
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
     geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesT, 3));
     geometry.setIndex(new THREE.BufferAttribute(indicesT, 1));
+    geometry.computeVertexNormals();
 
-    material = new THREE.MeshBasicMaterial({ color: 0xaa6500 });
+    material = new THREE.MeshStandardMaterial({ color: 0xaa6500 });
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
@@ -1073,7 +1075,7 @@ function createTreeModel3(x, y, z, rotation) {
 function update(){
     'use strict';
     const delta = clock.getDelta();
-    const movement_speed = delta * 30;
+    const movement_speed = delta * 50;
     ovni_directions.x += (ovni.userData.moving_left - ovni.userData.moving_right);
     ovni_directions.z += (ovni.userData.moving_forward - ovni.userData.moving_back);
 
@@ -1086,7 +1088,12 @@ function update(){
     ovni_directions.set(0, 0, 0);
     }
 
-
+    if (!directLightOn) {
+        dirLight.intensity = 0;
+    }
+    else{
+        dirLight.intensity = 0.1;
+    }
     geometries[0].rotation.y += 2 * delta;
 
 }
@@ -1111,6 +1118,29 @@ function changeToPhong() {
         }
     }
     phong = false;
+
+}
+
+function changeToBasic() {
+
+    for (let i=0; i<geometries.length; i++) {
+   
+        if (geometries[i] instanceof THREE.Object3D) {
+            const meshes = geometries[i].children.filter(child => child instanceof THREE.Mesh);
+            
+            for(let j=0; j < meshes.length; j++) {
+                const mesh = meshes[j];
+                const oldMaterial = mesh.material;
+                const newMaterial = new THREE.MeshBasicMaterial({ color: oldMaterial.color });
+
+                newMaterial.map = oldMaterial.map;
+                newMaterial.normalMap = oldMaterial.normalMap;
+
+                mesh.material = newMaterial;
+            }
+        }
+    }
+    basic = false;
 
 }
 
@@ -1209,6 +1239,9 @@ function animate() {
     else if (toon) {
         changeToToon();
     }
+    else if (basic){
+        changeToBasic();
+    }
 
 }
 
@@ -1273,14 +1306,19 @@ function onKeyDown(e) {
         break;
     case 69: // E
     case 101: // e
-        toon = true
+        toon = true;
  
         break;
-    
-        
-    }       
+    case 82: // R
+    case 114:// r
+        basic = true;
+        break;
+    case 68: //D
+    case 100://d
+        directLightOn = !directLightOn;
+        break;    
+    }
 }
-
 ///////////////////////
 /* KEY UP CALLBACK */
 ///////////////////////
