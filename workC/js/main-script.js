@@ -1,20 +1,17 @@
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-var camera, camera1, camera2, camera3, camera4, camera5, camera6, cameraGrass, cameraSky;
+var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, terrain, skyDome, tree;
-var toon, phong, lambert, basic, directLightOn = true, pointLightOn = true, spoLightOn = true;
+var toon, phong, lambert, basic, directLightOn = true;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
 var textureBuffer;
 var renderer_sky, renderer_grass;
-var dirLight, poiLight, spoLight;
-const nLights = 8;
-var ovniLights = [];
+var dirLight;
 var sky_texture = false, grass_texture = false;
-var vrButton;
 
 var geometries = [ovni = new THREE.Object3D(), 
     house = new THREE.Object3D(), 
@@ -635,14 +632,6 @@ function createCamera5() {
     camera5.rotateZ(Math.PI);    
 }
 
-function createCameraStereo() {
-    'use strict';
-
-    camera6 = new THREE.StereoCamera();
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-}
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
@@ -664,7 +653,7 @@ function createOvni(){
     geometries[0].add(mesh);
 
     const nLights = 8;
-    poiLight = new THREE.PointLight(0xffffff, 0.02); 
+
     var i = 0;
 
     while( i < nLights ){
@@ -678,9 +667,11 @@ function createOvni(){
         mesh = new THREE.Mesh( geometry, material );
         mesh.position.set(12,-2, 0);
         spherePos.add(mesh);
-        poiLight.position.set(mesh.position.x, -2, mesh.position.z); 
-        ovniLights.push(poiLight);
-        spherePos.add(poiLight);
+
+        var light = new THREE.PointLight(0xffffff, 0.02); 
+        light.position.set(mesh.position.x, -2, mesh.position.z); 
+
+        spherePos.add(light);
         i++;
     }
 
@@ -689,16 +680,16 @@ function createOvni(){
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, -4, 0);
 
-    spoLight = new THREE.SpotLight(0xffffff, 0.4);
-    spoLight.position.set(mesh.position.x, -1, mesh.position.z);  
-    spoLight.angle = Math.PI / 15;
+    light = new THREE.SpotLight(0xffffff, 0.4);
+    light.position.set(mesh.position.x, -1, mesh.position.z);  
+    light.angle = Math.PI / 15;
     
     const targetPosition = new THREE.Vector3();
-    targetPosition.copy(spoLight.position).add(new THREE.Vector3(0, -50, 0));
-    spoLight.target.position.copy(targetPosition);
+    targetPosition.copy(light.position).add(new THREE.Vector3(0, -50, 0));
+    light.target.position.copy(targetPosition);
 
-    mesh.add(spoLight);
-    mesh.add(spoLight.target);
+    mesh.add(light);
+    mesh.add(light.target);
     geometries[0].add(mesh);
 
     geometries[0].position.set(0,150,0);
@@ -850,17 +841,52 @@ function createGrassField(){
 
 
 function createNightSky(){
-    sky_scene.background = new THREE.Color(0x00008B);
+    var geometry = new THREE.PlaneGeometry(500, 500, 99, 99);
 
-    var geometry = new THREE.SphereGeometry(2, 32, 16);
+    var material = new THREE.ShaderMaterial({
+        uniforms: {
+          color1: {
+            value: new THREE.Color(0x00008B) //dark blue
+          },
+          color2: {
+            value: new THREE.Color(0x9400d3) //dark violet
+          }
+        },
+        vertexShader: `
+            varying vec2 vUv;
 
-    for (var i = 0; i < 300; i += 1) {
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform vec3 color1;
+            uniform vec3 color2;
+            varying vec2 vUv;
+
+            void main() {
+                gl_FragColor = vec4(mix(color1, color2, vUv.y), 1.0);
+            }
+        `
+    });
+
+    var mesh = new THREE.Mesh(geometry, material);
+    mesh.position.x = 0;
+    mesh.position.y = 0;
+    mesh.position.z = -10;
+
+    sky_scene.add(mesh);
+
+    geometry = new THREE.SphereGeometry(0.3, 32, 16);
+
+    for (var i = 0; i < 10000; i += 1) {
 
         colour = new THREE.Color();
         colour.setHex(0xffffff);
 
         material = new THREE.MeshBasicMaterial({ color: colour });
-        var mesh = new THREE.Mesh(geometry, material);
+        mesh = new THREE.Mesh(geometry, material);
         mesh.position.x = (Math.random()) * 396 - 198;
         mesh.position.y = (Math.random()) * 396 - 198;
         mesh.position.z = 0;
@@ -911,17 +937,16 @@ function createGrassTexture(){
 function createSkyTexture(){
     sky_scene = new THREE.Scene();
 
-    textureBuffer = new THREE.WebGLRenderTarget(400, 400, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, wrapS: THREE.RepeatWrapping, wrapT: THREE.RepeatWrapping});
+    textureBuffer = new THREE.WebGLRenderTarget(1000, 1000, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, wrapS: THREE.RepeatWrapping, wrapT: THREE.RepeatWrapping});
 
     createNightSky();
 
-    renderer.setSize(100,100);
+    renderer.setSize(1000,1000);
     renderer.setRenderTarget(textureBuffer);
     renderer.render(sky_scene, cameraSky);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setRenderTarget(null);
 
-    textureBuffer.texture.repeat.set(100,100);
     skyDome.material.color.setHex( 0xffffff );
     skyDome.material.map = textureBuffer.texture;
     skyDome.material.needsUpdate = true;
@@ -1194,23 +1219,6 @@ function update(){
     else{
         dirLight.intensity = 0.1;
     }
-    if (!pointLightOn) {
-        for(let i = 0; i < nLights; i++){
-        ovniLights[i].intensity = 0;
-        }
-    }
-    else{
-        for(let i = 0; i < nLights; i++){
-            ovniLights[i].intensity = 0.02;
-        }
-    }
-    if (!spoLightOn) {
-        spoLight.intensity = 0;
-    }
-    else{
-        spoLight.intensity = 0.4;
-    }
-
     geometries[0].rotation.y += 2 * delta;
 
 }
@@ -1221,11 +1229,6 @@ function update(){
 function render() {
     'use strict';
     renderer.render(scene, camera);
-    renderer.setAnimationLoop( function () {
-
-        renderer.render( scene, camera );
-    
-    } );
 }
 
 ////////////////////////////////
@@ -1237,22 +1240,13 @@ function init() {
         antialias: true
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-
-    vrButton = VRButton.createButton( renderer );
     document.body.appendChild(renderer.domElement);
-    document.body.appendChild( vrButton );
     createScene();
     clock.start();
 
-
-    createCamera1();
-    createCamera2();
-    createCamera3();
-    createCamera4();
     createCamera5();
 
-    renderer.xr.enabled = false;
-    camera = camera4; // start with ortogonal
+    camera = camera5; // start with ortogonal
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
@@ -1344,10 +1338,6 @@ function onKeyDown(e) {
     case 53: // 5
         camera = camera5;
         break;
-    case 54: // 6
-        //camera = camera6; ???
-        renderer.xr.enabled = true;
-        break;
     case 81: // Q
     case 113: // q
         lambert = true; 
@@ -1369,15 +1359,7 @@ function onKeyDown(e) {
     case 68: //D
     case 100://d
         directLightOn = !directLightOn;
-        break; 
-    case 80: //P   
-    case 112://p
-        pointLightOn = !pointLightOn;
-    break; 
-    case 83: //S  
-    case 115://s
-        spoLightOn = !spoLightOn;
-    break;
+        break;    
     }
 }
 ///////////////////////
@@ -1387,7 +1369,7 @@ function onKeyUp(e){
     'use strict';
 
     switch(e.keyCode) {
-        case 37:
+    case 37:
         geometries[0].userData.moving_left = 0;
         break;
     case 38:
