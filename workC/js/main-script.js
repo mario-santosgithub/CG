@@ -4,14 +4,26 @@
 var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, terrain, skyDome, tree;
-var toon, phong, lambert, basic, directLightOn = true;
+var toon, phong = true, lambert, basic = false, directLightOn = true ,  pointLightOn = true, spoLightOn = true;;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
 var textureBuffer;
 var renderer_sky, renderer_grass;
-var dirLight;
+var dirLight, poiLight, spoLight;
 var sky_texture = false, grass_texture = false;
+const nLights = 8;
+var ovniLights = [];
+var MaterialChanged = false;
+const TypesOfMaterials = {
+  PHONG: 'Phong',
+  BASIC: 'Basic',
+  LAMBERT: 'Lambert',
+  TOON: 'Toon',
+};
+var curMat = TypesOfMaterials.PHONG;
+var lastMat;
+
 
 var geometries = [ovni = new THREE.Object3D(), 
     house = new THREE.Object3D(), 
@@ -653,7 +665,7 @@ function createOvni(){
     geometries[0].add(mesh);
 
     const nLights = 8;
-
+    poiLight = new THREE.PointLight(0xffffff, 0.02); 
     var i = 0;
 
     while( i < nLights ){
@@ -667,11 +679,9 @@ function createOvni(){
         mesh = new THREE.Mesh( geometry, material );
         mesh.position.set(12,-2, 0);
         spherePos.add(mesh);
-
-        var light = new THREE.PointLight(0xffffff, 0.02); 
-        light.position.set(mesh.position.x, -2, mesh.position.z); 
-
-        spherePos.add(light);
+        poiLight.position.set(mesh.position.x, -2, mesh.position.z); 
+        ovniLights.push(poiLight);
+        spherePos.add(poiLight);
         i++;
     }
 
@@ -680,16 +690,16 @@ function createOvni(){
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, -4, 0);
 
-    light = new THREE.SpotLight(0xffffff, 0.4);
-    light.position.set(mesh.position.x, -1, mesh.position.z);  
-    light.angle = Math.PI / 15;
+    spoLight = new THREE.SpotLight(0xffffff, 0.4);
+    spoLight.position.set(mesh.position.x, -1, mesh.position.z);  
+    spoLight.angle = Math.PI / 15;
     
     const targetPosition = new THREE.Vector3();
-    targetPosition.copy(light.position).add(new THREE.Vector3(0, -50, 0));
-    light.target.position.copy(targetPosition);
+    targetPosition.copy(spoLight.position).add(new THREE.Vector3(0, -50, 0));
+    spoLight.target.position.copy(targetPosition);
 
-    mesh.add(light);
-    mesh.add(light.target);
+    mesh.add(spoLight);
+    mesh.add(spoLight.target);
     geometries[0].add(mesh);
 
     geometries[0].position.set(0,150,0);
@@ -729,7 +739,7 @@ function createHouse() {
     geometry.computeVertexNormals();
 
 
-    material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    material = new THREE.MeshPhongMaterial({ color: 0xffffff });
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
@@ -738,7 +748,7 @@ function createHouse() {
     geometry.setIndex(new THREE.BufferAttribute(indicesW, 1));
     geometry.computeVertexNormals();
 
-    material = new THREE.MeshStandardMaterial({ color: 0x0099cc });
+    material = new THREE.MeshPhongMaterial({ color: 0x0099cc });
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
@@ -747,7 +757,7 @@ function createHouse() {
     geometry.setIndex(new THREE.BufferAttribute(indicesD, 1));
     geometry.computeVertexNormals();
 
-    material = new THREE.MeshStandardMaterial({ color: 0x0099cc });
+    material = new THREE.MeshPhongMaterial({ color: 0x0099cc });
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
@@ -756,7 +766,7 @@ function createHouse() {
     geometry.setIndex(new THREE.BufferAttribute(indicesT, 1));
     geometry.computeVertexNormals();
 
-    material = new THREE.MeshStandardMaterial({ color: 0xaa6500 });
+    material = new THREE.MeshPhongMaterial({ color: 0xaa6500 });
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
@@ -768,7 +778,7 @@ function createSkyDome(){
 
     var geometry = new THREE.SphereGeometry(250, 32, 16);
 
-    var material = new THREE.MeshStandardMaterial({
+    var material = new THREE.MeshPhongMaterial({
         side: THREE.BackSide,
         color: 0x00008b,
         wireframe: false
@@ -789,7 +799,7 @@ function createTerrain(){
     geometry.rotateX(-Math.PI / 2);
 
 
-    var material = new THREE.MeshStandardMaterial({
+    var material = new THREE.MeshPhongMaterial({
         displacementMap: heightMapTexture,
         displacementScale: 50,
         color: 0x74663b,
@@ -959,14 +969,14 @@ function createTreeModel1(x, y, z, rotation) {
     tree = new THREE.Object3D();
 
     geometry = new THREE.CylinderGeometry(3, 3, 30, 50);
-    material = new THREE.MeshStandardMaterial({ color: 0xa45729, wireframe: false });
+    material = new THREE.MeshPhongMaterial({ color: 0xa45729, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 30, 0);
 
     tree.add(mesh);
 
     geometry = new THREE.CylinderGeometry(2, 2, 20, 50);
-    material = new THREE.MeshStandardMaterial({ color: 0x933f28, wireframe: false });
+    material = new THREE.MeshPhongMaterial({ color: 0x933f28, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 45, 5);
 
@@ -984,7 +994,7 @@ function createTreeModel1(x, y, z, rotation) {
     geometry = new THREE.SphereGeometry(15, 32, 32);
     geometry.scale(1, 0.5, 1);
 
-    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 55, 10);
     tree.add(mesh);
@@ -992,7 +1002,7 @@ function createTreeModel1(x, y, z, rotation) {
     geometry = new THREE.SphereGeometry(10, 32, 32);
     geometry.scale(2, 0.5, 1.5);
 
-    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 60, -20);
     tree.add(mesh);
@@ -1000,7 +1010,7 @@ function createTreeModel1(x, y, z, rotation) {
     geometry = new THREE.SphereGeometry(10, 32, 32);
     geometry.scale(2, 0.5, 1.5);
 
-    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 60, -5);
     tree.add(mesh);
@@ -1017,14 +1027,14 @@ function createTreeModel2(x, y, z, rotation) {
     var tree = new THREE.Object3D();
 
     geometry = new THREE.CylinderGeometry(3, 3, 30, 50);
-    material = new THREE.MeshStandardMaterial({ color: 0xa45729, wireframe: false });
+    material = new THREE.MeshPhongMaterial({ color: 0xa45729, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 30, 0);
 
     tree.add(mesh);
 
     geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
-    material = new THREE.MeshStandardMaterial({ color: 0x933f28, wireframe: false });
+    material = new THREE.MeshPhongMaterial({ color: 0x933f28, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 50, 10);
 
@@ -1047,7 +1057,7 @@ function createTreeModel2(x, y, z, rotation) {
     geometry = new THREE.SphereGeometry(15, 32, 32);
     geometry.scale(2, 0.5, 1);
 
-    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 60, 0);
     mesh.rotateY(Math.PI / 2);
@@ -1065,7 +1075,7 @@ function createTreeModel3(x, y, z, rotation) {
     var tree = new THREE.Object3D();
 
     geometry = new THREE.CylinderGeometry(3.5, 3.5, 45, 50);
-    material = new THREE.MeshStandardMaterial({ color: 0xa45729, wireframe: false });
+    material = new THREE.MeshPhongMaterial({ color: 0xa45729, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 30, 0);
 
@@ -1073,7 +1083,7 @@ function createTreeModel3(x, y, z, rotation) {
     tree.add(mesh);
 
     geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
-    material = new THREE.MeshStandardMaterial({ color: 0x933f28, wireframe: false });
+    material = new THREE.MeshPhongMaterial({ color: 0x933f28, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 45, 10);
 
@@ -1083,7 +1093,7 @@ function createTreeModel3(x, y, z, rotation) {
     geometry = new THREE.SphereGeometry(18, 32, 32);
     geometry.scale(2, 0.5, 1.5);
 
-    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 45, -27);
     mesh.rotateX(-Math.PI / 4);
@@ -1092,7 +1102,7 @@ function createTreeModel3(x, y, z, rotation) {
     geometry = new THREE.SphereGeometry(14, 32, 32);
     geometry.scale(1, 0.5, 1.5);
 
-    material = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 55, 10);
 
@@ -1147,7 +1157,6 @@ function changeToBasic() {
             }
         }
     }
-    basic = false;
 
 }
 
@@ -1216,8 +1225,24 @@ function update(){
     if (!directLightOn) {
         dirLight.intensity = 0;
     }
-    else{
+    else {
         dirLight.intensity = 0.1;
+    }
+    if (!pointLightOn) {
+        for(let i = 0; i < nLights; i++){
+            ovniLights[i].intensity = 0;
+        }
+    }
+    else {
+        for(let i = 0; i < nLights; i++){
+            ovniLights[i].intensity = 0.02;
+        }
+    }
+    if (!spoLightOn) {
+        spoLight.intensity = 0;
+    }
+    else{
+        spoLight.intensity = 0.4;
     }
     geometries[0].rotation.y += 2 * delta;
 
@@ -1265,20 +1290,29 @@ function animate() {
     'use strict';
 
     update();
-
-    if (lambert) {
-        changeToLambert();
-    } 
-    else if (phong) {
-        changeToPhong();
+    if(MaterialChanged){
+        if (lambert) {
+            changeToLambert();
+        } 
+        else if (phong) {
+            changeToPhong();
+        }
+        else if (toon) {
+            changeToToon();
+        }
+        else if (basic){
+            changeToBasic();
+        }
+        else if(!basic && Object.values(TypesOfMaterials).includes(lastMat)){
+            if (lastMat == TypesOfMaterials.LAMBERT)
+                changeToLambert();
+            else if (lastMat == TypesOfMaterials.PHONG)
+                changeToPhong();
+            else if (lastMat == TypesOfMaterials.TOON)
+                changeToToon();
+        }
+        MaterialChanged = false;
     }
-    else if (toon) {
-        changeToToon();
-    }
-    else if (basic){
-        changeToBasic();
-    }
-
     if(grass_texture){
         createGrassTexture();
     }
@@ -1344,26 +1378,57 @@ function onKeyDown(e) {
         break;
     case 81: // Q
     case 113: // q
-        lambert = true; 
+        if(curMat != TypesOfMaterials.LAMBERT){
+            lastMat = curMat;
+            curMat = TypesOfMaterials.LAMBERT;
+            lambert = true;
+            MaterialChanged = true;
+        }
         break;
     case 87: // W
     case 119: // w
-        phong = true;
-
+        if(curMat != TypesOfMaterials.PHONG){
+            lastMat = curMat;
+            curMat = TypesOfMaterials.PHONG;
+            phong = true;
+            MaterialChanged = true;
+        }
         break;
     case 69: // E
     case 101: // e
-        toon = true;
- 
+        if(curMat != TypesOfMaterials.TOON){
+            lastMat = curMat;
+            curMat = TypesOfMaterials.TOON;
+            toon = true;
+            MaterialChanged = true;
+        }
         break;
     case 82: // R
     case 114:// r
-        basic = true;
+        if(curMat != TypesOfMaterials.BASIC){
+            lastMat = curMat;
+            curMat = TypesOfMaterials.BASIC;
+            basic = !basic;
+            MaterialChanged = true;
+        }
+        else{
+            curMat = lastMat;
+            basic = !basic;
+            MaterialChanged = true;
+        }
         break;
     case 68: //D
     case 100://d
         directLightOn = !directLightOn;
-        break;    
+        break;
+    case 80: //P   
+    case 112://p
+        pointLightOn = !pointLightOn;
+        break; 
+    case 83: //S  
+    case 115://s
+        spoLightOn = !spoLightOn;
+        break;   
     }
 }
 ///////////////////////
