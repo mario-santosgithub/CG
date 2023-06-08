@@ -1239,8 +1239,11 @@ function init() {
     renderer = new THREE.WebGLRenderer({
         antialias: true
     });
+    renderer.xr.enabled = true;
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+    document.body.appendChild(VRButton.createButton(renderer));
+
     createScene();
     clock.start();
 
@@ -1251,6 +1254,8 @@ function init() {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
+
+    renderer.setAnimationLoop(animate);
 }
 
 /////////////////////
@@ -1283,7 +1288,6 @@ function animate() {
     }
 
     render();
-    requestAnimationFrame(animate);
 
 
 }
