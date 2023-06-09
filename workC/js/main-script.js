@@ -313,6 +313,57 @@ var verticesH = new Float32Array([
     84, 39, -18,           // Vertex 2
     84, 27, 0,             // Vertex 3
 
+    // Triangle 60
+    48, 30, -3,           // Vertex 1
+    68, 30, -3,           // Vertex 2
+    68, 42, -3,             // Vertex 3
+
+    // Triangle 61
+    48, 42, -3,           // Vertex 2
+    48, 30, -3,           // Vertex 1
+    68, 42, -3,             // Vertex 3
+
+    // Triangle 62
+    68, 30, -3,           // Vertex 1
+    68, 30, -6,           // Vertex 2
+    68, 42, -6,             // Vertex 3
+
+    // Triangle 63
+    68, 42, -3,           // Vertex 2
+    68, 30, -3,           // Vertex 1
+    68, 42, -6,             // Vertex 3
+
+    // Triangle 64
+    48, 30, -3,           // Vertex 1
+    48, 30, -6,           // Vertex 2
+    48, 42, -6,             // Vertex 3
+
+    // Triangle 65
+    48, 42, -3,           // Vertex 2
+    48, 30, -3,           // Vertex 1
+    48, 42, -6,             // Vertex 3
+
+    // Triangle 66
+    48, 30, -6,           // Vertex 1
+    68, 30, -6,           // Vertex 2
+    68, 42, -6,             // Vertex 3
+
+    // Triangle 67
+    48, 42, -6,           // Vertex 2
+    48, 30, -6,           // Vertex 1
+    68, 42, -6,             // Vertex 3
+
+    // Triangle 68
+    48, 42, -3,           // Vertex 1
+    68, 42, -3,           // Vertex 2
+    68, 42, -6,             // Vertex 3
+
+    // Triangle 69
+    48, 42, -6,           // Vertex 2
+    48, 42, -6,           // Vertex 1
+    68, 42, -3,             // Vertex 3
+
+
 
     
     
@@ -375,6 +426,16 @@ var indicesH = new Uint16Array([
    159, 160, 161,       // Triangle 57
    162, 163, 164,       // Triangle 58
    165, 166, 167,       // Triangle 59
+   168, 169, 170,       // Triangle 60
+   171, 172, 173,       // Triangle 61
+   174, 175, 176,       // Triangle 62
+   177, 178, 179,       // Triangle 63
+   180, 181, 182,       // Triangle 64
+   183, 184, 185,       // Triangle 65
+   186, 187, 188,       // Triangle 66
+   189, 190, 191,       // Triangle 67
+   192, 193, 194,       // Triangle 68
+   195, 196, 197        // Triangle 69
 ]);
 
 var verticesW = new Float32Array([
