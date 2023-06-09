@@ -612,7 +612,7 @@ function createPerspectiveCamera() {
                                          1,
                                          1000);
     perspectiveCamera.position.x = 170;
-    perspectiveCamera.position.y = 200;
+    perspectiveCamera.position.y = 185;
     perspectiveCamera.position.z = 170;
     perspectiveCamera.lookAt(scene.position);
     perspectiveCamera.rotateZ(Math.PI);    
@@ -665,7 +665,7 @@ function createOvni(){
     mesh.position.set(0, -4, 0);
 
     spoLight = new THREE.SpotLight(0xffffff, 0.4);
-    spoLight.position.set(mesh.position.x, -1, mesh.position.z);  
+    spoLight.position.set(mesh.position.x, 14, mesh.position.z);  
     spoLight.angle = Math.PI / 15;
     
     const targetPosition = new THREE.Vector3();
@@ -676,7 +676,7 @@ function createOvni(){
     mesh.add(spoLight.target);
     geometries[0].add(mesh);
 
-    geometries[0].position.set(0,150,0);
+    geometries[0].position.set(0,135,0);
 
     geometries[0].userData = { moving_left: 0, moving_right: 0, moving_forward: 0, moving_back: 0};
     scene.add(geometries[0]);
@@ -690,12 +690,12 @@ function createMoon() {
 
     mesh = new THREE.Mesh( geometry, material );
     geometries[2].add(mesh);
-    geometries[2].position.set(-120, 180, 50);
+    geometries[2].position.set(-120, 165, 50);
     
     dirLight = new THREE.DirectionalLight(0xffffff, 0.1);
-    dirLight.position.set(15, 32, 30);
+    dirLight.position.set(15, 17, 30);
     var lightTarget = new THREE.Object3D();
-    lightTarget.position.set(0, 0, 0);
+    lightTarget.position.set(0, -15, 0);
     dirLight.target = lightTarget;
     
     scene.add(dirLight);
@@ -744,7 +744,7 @@ function createHouse() {
     mesh = new THREE.Mesh(geometry, material);
     geometries[1].add(mesh);
 
-    geometries[1].position.set(70,13,-150);
+    geometries[1].position.set(70,-3,-150);
     scene.add(geometries[1]);
 }
 
@@ -760,6 +760,7 @@ function createSkyDome(){
     });
 
     skyDome = new THREE.Mesh(geometry, material);
+    skyDome.position.set(0,-15,0);
     scene.add(skyDome);
 }
 
@@ -772,7 +773,6 @@ function createTerrain(){
 
     geometry.rotateX(-Math.PI / 2);
 
-
     var material = new THREE.MeshPhongMaterial({
         displacementMap: heightMapTexture,
         displacementScale: 50,
@@ -782,6 +782,7 @@ function createTerrain(){
     });
 
    terrain = new THREE.Mesh(geometry, material);
+   terrain.position.set(0,-15,0);
    scene.add(terrain);
 }
 
@@ -945,21 +946,21 @@ function createTreeModel1(x, y, z, rotation) {
     geometry = new THREE.CylinderGeometry(3, 3, 30, 50);
     material = new THREE.MeshPhongMaterial({ color: 0xa45729, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 30, 0);
+    mesh.position.set(0, 15, 0);
 
     tree.add(mesh);
 
     geometry = new THREE.CylinderGeometry(2, 2, 20, 50);
     material = new THREE.MeshPhongMaterial({ color: 0x933f28, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 45, 5);
+    mesh.position.set(0, 30, 5);
 
     mesh.rotateX(Math.PI / 4);
 
     tree.add(mesh);
     geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 50, -10);
+    mesh.position.set(0, 35, -10);
 
     mesh.rotateX(-Math.PI / 4);
 
@@ -970,7 +971,7 @@ function createTreeModel1(x, y, z, rotation) {
 
     material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 55, 10);
+    mesh.position.set(0, 40, 10);
     tree.add(mesh);
 
     geometry = new THREE.SphereGeometry(10, 32, 32);
@@ -978,7 +979,7 @@ function createTreeModel1(x, y, z, rotation) {
 
     material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 60, -20);
+    mesh.position.set(0, 45, -20);
     tree.add(mesh);
 
     geometry = new THREE.SphereGeometry(10, 32, 32);
@@ -986,7 +987,7 @@ function createTreeModel1(x, y, z, rotation) {
 
     material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 60, -5);
+    mesh.position.set(0, 45, -5);
     tree.add(mesh);
 
     tree.position.set(x, y, z);
@@ -1003,28 +1004,28 @@ function createTreeModel2(x, y, z, rotation) {
     geometry = new THREE.CylinderGeometry(3, 3, 30, 50);
     material = new THREE.MeshPhongMaterial({ color: 0xa45729, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 30, 0);
+    mesh.position.set(0, 15, 0);
 
     tree.add(mesh);
 
     geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
     material = new THREE.MeshPhongMaterial({ color: 0x933f28, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 50, 10);
+    mesh.position.set(0, 35, 10);
 
     mesh.rotateX(Math.PI / 4);
 
     tree.add(mesh);
     geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 50, -10);
+    mesh.position.set(0, 35, -10);
 
     mesh.rotateX(-Math.PI / 4);
 
     tree.add(mesh);
     geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 50, 0);
+    mesh.position.set(0, 35, 0);
 
     tree.add(mesh);
 
@@ -1033,7 +1034,7 @@ function createTreeModel2(x, y, z, rotation) {
 
     material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 60, 0);
+    mesh.position.set(0, 45, 0);
     mesh.rotateY(Math.PI / 2);
     tree.add(mesh);
 
@@ -1059,7 +1060,7 @@ function createTreeModel3(x, y, z, rotation) {
     geometry = new THREE.CylinderGeometry(2, 2, 30, 50);
     material = new THREE.MeshPhongMaterial({ color: 0x933f28, wireframe: false });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 45, 10);
+    mesh.position.set(0, 30, 10);
 
     mesh.rotateX(Math.PI / 4);
     tree.add(mesh);
@@ -1069,7 +1070,7 @@ function createTreeModel3(x, y, z, rotation) {
 
     material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 45, -27);
+    mesh.position.set(0, 30, -27);
     mesh.rotateX(-Math.PI / 4);
     tree.add(mesh);
 
@@ -1078,7 +1079,7 @@ function createTreeModel3(x, y, z, rotation) {
 
     material = new THREE.MeshPhongMaterial({ color: 0x006400 });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, 55, 10);
+    mesh.position.set(0, 40, 10);
 
     tree.add(mesh);
 
