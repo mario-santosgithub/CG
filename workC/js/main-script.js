@@ -1,14 +1,14 @@
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-var camera, camera1, camera2, camera3, camera4, camera5, cameraGrass, cameraSky;
+var camera, camera5, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, terrain, skyDome, tree;
 var toon, phong = true, lambert, basic = false, directLightOn = true ,  pointLightOn = true, spoLightOn = true;;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
-var textureBuffer;
+var textureBufferGrass, textureBufferSky;
 var renderer_sky, renderer_grass;
 var dirLight, poiLight, spoLight;
 var sky_texture = false, grass_texture = false;
@@ -604,93 +604,6 @@ function createScene() {
 /* CREATE CAMERA(S) */
 //////////////////////
 
-// Frontal
-function createCamera1() {
-    'use strict';
-    
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    const frustumSize = 100;
-
-    camera1 = new THREE.OrthographicCamera(
-        frustumSize * aspectRatio / -2,
-        frustumSize * aspectRatio / 2,
-        frustumSize / 2,
-        frustumSize / -2,
-        1,
-        1000
-    );
-
-    camera1.position.x = 0;
-    camera1.position.y = 0;
-    camera1.position.z = 800;
-    camera1.lookAt(scene.position);
-}
-
-// Lateral
-function createCamera2() {
-    'use strict';
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    const frustumSize = 200;
-
-    camera2 = new THREE.OrthographicCamera(
-        frustumSize * aspectRatio / -2,
-        frustumSize * aspectRatio / 2,
-        frustumSize / 2,
-        frustumSize / -2,
-        1,
-        1000
-    );
-
-    camera2.position.x = 800;
-    camera2.position.y = 0;
-    camera2.position.z = 0;
-    camera2.lookAt(scene.position);
-}
-
-// Topo
-function createCamera3() {
-    'use strict';
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    const frustumSize = 100;
-
-    camera3 = new THREE.OrthographicCamera(
-        frustumSize * aspectRatio / -2,
-        frustumSize * aspectRatio / 2,
-        frustumSize / 2,
-        frustumSize / -2,
-        1,
-        1000
-    );
-
-    camera3.position.x = 0;
-    camera3.position.y = -800;
-    camera3.position.z = 0;
-    camera3.lookAt(scene.position);
-    camera3.rotateZ(Math.PI/2);
-}
-
-// Ortogonal
-function createCamera4() {
-    'use strict';
-
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    const frustumSize = 300;
-
-    camera4 = new THREE.OrthographicCamera(
-        frustumSize * aspectRatio / -2,
-        frustumSize * aspectRatio / 2,
-        frustumSize / 2,
-        frustumSize / -2,
-        1,
-        2000
-    );
-
-    camera4.position.x = 400;
-    camera4.position.y = 400;
-    camera4.position.z = 400;
-    camera4.lookAt(scene.position);
-}
-
 // Perspetiva 
 function createCamera5() {
     'use strict';
@@ -787,7 +700,7 @@ function createMoon() {
     
     scene.add(dirLight);
     scene.add(lightTarget);
-    var ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
     scene.add(geometries[2]);
 }
@@ -837,7 +750,7 @@ function createHouse() {
 
 function createSkyDome(){
 
-    var geometry = new THREE.SphereGeometry(250, 32, 16);
+    var geometry = new THREE.SphereGeometry(250, 64, 32);
 
     var material = new THREE.MeshPhongMaterial({
         side: THREE.BackSide,
@@ -987,19 +900,19 @@ function createNightSky(){
 function createGrassTexture(){
     grass_scene = new THREE.Scene();
 
-    textureBuffer = new THREE.WebGLRenderTarget(400, 400, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, wrapS: THREE.RepeatWrapping, wrapT: THREE.RepeatWrapping});
+    textureBufferGrass = new THREE.WebGLRenderTarget(400, 400, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, wrapS: THREE.RepeatWrapping, wrapT: THREE.RepeatWrapping});
 
     createGrassField();
 
     renderer.setSize(100,100);
-    renderer.setRenderTarget(textureBuffer);
+    renderer.setRenderTarget(textureBufferGrass);
     renderer.render(grass_scene, cameraGrass);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setRenderTarget(null);
 
-    textureBuffer.texture.repeat.set(100,100);
+    textureBufferGrass.texture.repeat.set(100,100);
     terrain.material.color.setHex( 0xffffff );
-    terrain.material.map = textureBuffer.texture;
+    terrain.material.map = textureBufferGrass.texture;
     terrain.material.needsUpdate = true;
     
     grass_texture = false;
@@ -1008,18 +921,18 @@ function createGrassTexture(){
 function createSkyTexture(){
     sky_scene = new THREE.Scene();
 
-    textureBuffer = new THREE.WebGLRenderTarget(1000, 1000, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, wrapS: THREE.RepeatWrapping, wrapT: THREE.RepeatWrapping});
+    textureBufferSky = new THREE.WebGLRenderTarget(1000, 1000, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, wrapS: THREE.RepeatWrapping, wrapT: THREE.RepeatWrapping});
 
     createNightSky();
 
     renderer.setSize(1000,1000);
-    renderer.setRenderTarget(textureBuffer);
+    renderer.setRenderTarget(textureBufferSky);
     renderer.render(sky_scene, cameraSky);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setRenderTarget(null);
 
     skyDome.material.color.setHex( 0xffffff );
-    skyDome.material.map = textureBuffer.texture;
+    skyDome.material.map = textureBufferSky.texture;
     skyDome.material.needsUpdate = true;
 
     sky_texture = false;
@@ -1427,15 +1340,6 @@ function onKeyDown(e) {
         break;
     case 50: // 2
         sky_texture = true;
-        break;
-    case 51: // 3
-        camera = camera3;
-        break;
-    case 52: // 4
-        camera = camera4;
-        break;
-    case 53: // 5
-        camera = camera5;
         break;
     case 81: // Q
     case 113: // q
