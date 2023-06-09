@@ -4,7 +4,7 @@
 var camera, perspectiveCamera, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, terrain, skyDome, tree;
-var toon, phong = true, lambert, basic = false, directLightOn = true ,  pointLightOn = true, spoLightOn = true;;
+var toon = false, phong = false, lambert = false, basic = false, directLightOn = true ,  pointLightOn = true, spoLightOn = true;;
 var clock = new THREE.Clock();
 var ovni_directions = new THREE.Vector3(0,0,0);
 var grass_scene, sky_scene;
@@ -22,7 +22,7 @@ const TypesOfMaterials = {
   TOON: 'Toon',
 };
 var curMat = TypesOfMaterials.PHONG;
-var lastMat;
+var lastMat = TypesOfMaterials.PHONG;
 
 
 var geometries = [ovni = new THREE.Object3D(), 
@@ -1268,7 +1268,7 @@ function animate() {
     if(MaterialChanged){
         if (lambert) {
             changeToLambert();
-        } 
+        }
         else if (phong) {
             changeToPhong();
         }
