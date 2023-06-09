@@ -1,7 +1,7 @@
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-var camera, camera5, cameraGrass, cameraSky;
+var camera, perspectiveCamera, cameraGrass, cameraSky;
 var scene, renderer;
 var material, geometry, mesh, terrain, skyDome, tree;
 var toon, phong = true, lambert, basic = false, directLightOn = true ,  pointLightOn = true, spoLightOn = true;;
@@ -605,17 +605,17 @@ function createScene() {
 //////////////////////
 
 // Perspetiva 
-function createCamera5() {
+function createPerspectiveCamera() {
     'use strict';
-    camera5 = new THREE.PerspectiveCamera(1000,
+    perspectiveCamera = new THREE.PerspectiveCamera(1000,
                                          window.innerWidth / window.innerHeight,
                                          1,
                                          1000);
-    camera5.position.x = 170;
-    camera5.position.y = 200;
-    camera5.position.z = 170;
-    camera5.lookAt(scene.position);
-    camera5.rotateZ(Math.PI);    
+    perspectiveCamera.position.x = 170;
+    perspectiveCamera.position.y = 200;
+    perspectiveCamera.position.z = 170;
+    perspectiveCamera.lookAt(scene.position);
+    perspectiveCamera.rotateZ(Math.PI);    
 }
 
 ////////////////////////
@@ -1246,9 +1246,9 @@ function init() {
     createScene();
     clock.start();
 
-    createCamera5();
+    createPerspectiveCamera();
 
-    camera = camera5; // start with ortogonal
+    camera = perspectiveCamera; // start with ortogonal
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
