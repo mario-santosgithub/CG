@@ -1349,6 +1349,7 @@ function onKeyDown(e) {
             curMat = TypesOfMaterials.LAMBERT;
             lambert = true;
             MaterialChanged = true;
+            basic = false;
         }
         break;
     case 87: // W
@@ -1358,6 +1359,7 @@ function onKeyDown(e) {
             curMat = TypesOfMaterials.PHONG;
             phong = true;
             MaterialChanged = true;
+            basic = false;
         }
         break;
     case 69: // E
@@ -1367,6 +1369,7 @@ function onKeyDown(e) {
             curMat = TypesOfMaterials.TOON;
             toon = true;
             MaterialChanged = true;
+            basic = false;
         }
         break;
     case 82: // R
